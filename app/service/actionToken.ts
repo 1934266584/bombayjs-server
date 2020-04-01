@@ -1,11 +1,12 @@
 // @ts-nocheck
-'use strict';
+"use strict";
 
-import { Service } from 'egg';
-import * as jwt from 'jsonwebtoken';
+import { Service } from "egg";
+// @ts-ignore
+import * as jwt from "jsonwebtoken";
 
 export default class ActionTokenService extends Service {
-  async apply(_id) {
+  async apply(_id: string) {
     const { ctx } = this;
     return jwt.sign(
       {

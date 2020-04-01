@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { Service } from 'egg';
+import { Service } from "egg";
 
 interface Conditions {
   user_id: string;
@@ -12,41 +11,41 @@ export default class EventVariateService extends Service {
   ProjectValidate: any;
   listValidate: any;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.ProjectValidate = {
       project_token: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '新增事件操作：请选择项目'
+        desc: "新增事件操作：请选择项目"
       },
       name: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '新增事件操作：事件名称不能为空'
+        desc: "新增事件操作：事件名称不能为空"
       },
       marker: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '新增事件操作：事件标识符不能为空'
+        desc: "新增事件操作：事件标识符不能为空"
       },
       type: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '新增事件操作：事件类型不能为空'
+        desc: "新增事件操作：事件类型不能为空"
       }
     };
 
     this.listValidate = {
       project_token: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '新增事件操作：请选择项目'
+        desc: "新增事件操作：请选择项目"
       }
     };
   }
@@ -57,6 +56,7 @@ export default class EventVariateService extends Service {
     ctx.validate(this.ProjectValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     // 检验是否存在
@@ -65,17 +65,17 @@ export default class EventVariateService extends Service {
       name: query.name,
       type: query.type
     }).exec();
-    if (search) return this.app.retError('新增项目信息操作：事件已存在');
+    if (search) return this.app.retError("新增项目信息操作：事件已存在");
 
     search = await ctx.model.EventVariate.findOne({
       project_token: query.project_token,
       marker: query.marker,
       type: query.type
     }).exec();
-    if (search) return this.app.retError('新增项目信息操作：事件已存在');
+    if (search) return this.app.retError("新增项目信息操作：事件已存在");
 
     const variate = new ctx.model.EventVariate();
-    variate.user_id = [ctx.currentUserId || ''];
+    variate.user_id = [ctx.currentUserId || ""];
     variate.project_token = query.project_token;
     variate.name = query.name;
     variate.marker = query.marker;
@@ -93,6 +93,7 @@ export default class EventVariateService extends Service {
     ctx.validate(this.listValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
 
@@ -105,7 +106,7 @@ export default class EventVariateService extends Service {
     if (query.type) cond.type = query.type;
 
     const result = await ctx.model.EventVariate.findOne(query).exec();
-    if (!result) return this.app.retError('事件不存在');
+    if (!result) return this.app.retError("事件不存在");
 
     return this.app.retResult(result);
   }
@@ -123,12 +124,13 @@ export default class EventVariateService extends Service {
     ctx.validate(this.ProjectValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     const variate = await ctx.model.EventVariate.findOne({
       _id: query._id
     }).exec();
-    if (!variate) return this.app.retError('新增项目信息操作：事件不存在');
+    if (!variate) return this.app.retError("新增项目信息操作：事件不存在");
 
     // 检验是否存在
     let search = await ctx.model.EventVariate.findOne({
@@ -137,7 +139,7 @@ export default class EventVariateService extends Service {
       project_token: query.project_token
     }).exec();
     if (search && search.id !== variate.id)
-      return this.app.retError('新增项目信息操作：事件已存在');
+      return this.app.retError("新增项目信息操作：事件已存在");
 
     search = await ctx.model.EventVariate.findOne({
       marker: query.marker,
@@ -145,7 +147,7 @@ export default class EventVariateService extends Service {
       project_token: query.project_token
     }).exec();
     if (search && search.id !== variate.id)
-      return this.app.retError('新增项目信息操作：事件已存在');
+      return this.app.retError("新增项目信息操作：事件已存在");
 
     variate.name = query.name;
     variate.marker = query.marker;
@@ -162,6 +164,7 @@ export default class EventVariateService extends Service {
     ctx.validate(this.listValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     const conditions: Conditions = {

@@ -1,11 +1,10 @@
-// @ts-nocheck
 module.exports = {
   /**
    * 截取ip前三位
    * @param ip
    *
    */
-  subIp(ip) {
+  subIp(ip: string) {
     const ips = ip.split('.');
     return `${ips[0]}.${ips[1]}.${ips[2]}`;
   },
@@ -33,12 +32,13 @@ module.exports = {
     }
     qs.split(eq).reduce((previousValue, currentValue) => {
       const [key, value] = currentValue.split(seq);
+      // @ts-ignore
       previousValue[key.trim()] = value.trim();
       return previousValue;
     }, obj);
     return obj;
   },
-  success(res) {
+  success(res: any) {
     this.ctx.body = {
       data: res,
       code: 200,

@@ -11,7 +11,7 @@ module.exports = {
     }
     return pwd + Date.now();
   },
-  retResult(data, msg = 'success', code = 200) {
+  retResult(data: any, msg = 'success', code = 200) {
     return {
       code,
       data,
@@ -21,7 +21,8 @@ module.exports = {
   retError(errorMsg = 'fail', errorCode = -1, data = {}) {
     return this.retResult(data, errorMsg, errorCode);
   },
-  format(date, fmt) {
+  // @ts-ignore
+  format(date: Date, fmt) {
     const o = {
       'M+': date.getMonth() + 1, // 月份
       'd+': date.getDate(), // 日

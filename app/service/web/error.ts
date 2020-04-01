@@ -1,29 +1,29 @@
 // @ts-nocheck
-import { Service } from 'egg';
+import { Service } from "egg";
 // tslint:disable-next-line:no-var-requires
-const _ = require('lodash');
+const _ = require("lodash");
 
 export default class ErrorService extends Service {
   listValidator: any;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.listValidator = {
       key: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
         range: { in: this.config.report_filter },
-        desc: '类型不正确'
+        desc: "类型不正确"
       },
-      token: { type: 'string', required: true, trim: true, desc: '请选择项目' },
+      token: { type: "string", required: true, trim: true, desc: "请选择项目" },
       begin: {
-        type: 'date',
+        type: "date",
         required: true,
         trim: true,
-        desc: '请选择开始时间'
+        desc: "请选择开始时间"
       },
-      end: { type: 'date', required: true, trim: true, desc: '请选择结束时间' }
+      end: { type: "date", required: true, trim: true, desc: "请选择结束时间" }
     };
   }
 
@@ -45,7 +45,7 @@ export default class ErrorService extends Service {
         },
         {
           $group: {
-            _id: '$' + key,
+            _id: "$" + key,
             count: { $sum: 1 }
           }
         }
@@ -56,14 +56,14 @@ export default class ErrorService extends Service {
 
   // 获取详情
   async filterList(ctx) {
-    const { key, token, begin, end, value, type = 'error' } = ctx.request.body;
+    const { key, token, begin, end, value, type = "error" } = ctx.request.body;
     ctx.validate(this.listValidator);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     const model = ctx.app.models[`Web${_.capitalize(type)}`];
-    if (!model) return this.app.retError('不存在的错误类型');
+    if (!model) return this.app.retError("不存在的错误类型");
     // const result = await model(token).find()
     //   .where({ createdAt: { $gte: new Date(begin), $lte: new Date(end) } })
     //   .where({ [key]: value })
@@ -78,15 +78,15 @@ export default class ErrorService extends Service {
         },
         {
           $group: {
-            _id: '$msg',
+            _id: "$msg",
             count: { $sum: 1 },
-            lastTime: { $last: '$createdAt' },
-            uids: { $addToSet: '$uid' }
+            lastTime: { $last: "$createdAt" },
+            uids: { $addToSet: "$uid" }
           }
         }
       ])
       .addFields({
-        uv: { $size: '$uids' }
+        uv: { $size: "$uids" }
       })
       .exec();
     return this.app.retResult(result);

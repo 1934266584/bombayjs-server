@@ -1,14 +1,14 @@
 // @ts-nocheck
-import { Service, Context } from 'egg';
+import { Service, Context } from "egg";
 
 // tslint:disable-next-line:no-var-requires
-const moment = require('moment');
+const moment = require("moment");
 
 class RetCodeService extends Service {
   constructor(ctx: Context) {
     super(ctx);
   }
-  public async search(payload) {
+  public async search(payload: any) {
     const { startTime, endTime, query, currentPage, pageSize, order } = payload;
     const queryParams: any[] = [];
     const keys = Object.keys(query);
@@ -21,7 +21,7 @@ class RetCodeService extends Service {
           must: queryParams,
           filter: {
             range: {
-              '@timestamp': {
+              "@timestamp": {
                 gte: moment(startTime),
                 lte: moment(endTime)
               }
@@ -32,7 +32,7 @@ class RetCodeService extends Service {
       size: pageSize,
       from: (currentPage - 1) * pageSize,
       sort: {
-        '@timestamp': {
+        "@timestamp": {
           order
         }
       }
@@ -50,7 +50,7 @@ class RetCodeService extends Service {
    * @param payload
    * ************************************************************************************************
    */
-  public async dimension(payload) {
+  public async dimension(payload: any) {
     const {
       filters,
       dimensions,
@@ -68,7 +68,7 @@ class RetCodeService extends Service {
           must: filterParams,
           filter: {
             range: {
-              '@timestamp': {
+              "@timestamp": {
                 gte: moment(startTime),
                 lte: moment(endTime)
               }
@@ -87,7 +87,7 @@ class RetCodeService extends Service {
    * @param payload
    * ************************************************************************************************
    */
-  async indicator(payload) {
+  async indicator(payload: any) {
     const { filters, startTime, endTime, intervalMillis, measures } = payload;
     const filterParams = this.filterParams(filters);
     const aggsQuery = this.aggsIndicatorQuery(measures, intervalMillis);
@@ -98,7 +98,7 @@ class RetCodeService extends Service {
           must: filterParams,
           filter: {
             range: {
-              '@timestamp': {
+              "@timestamp": {
                 gte: moment(startTime),
                 lte: moment(endTime)
               }
@@ -120,7 +120,7 @@ class RetCodeService extends Service {
    * @returns object  返回结果
    * *******************************************************************************************
    */
-  public dimensionRes(res, dimensions, measures) {
+  public dimensionRes(res: any, dimensions: any, measures: any) {
     let total: number = 0; // 返回结果总和
     const data: any[] = []; // 查询数据
     const name = dimensions[0];
@@ -131,11 +131,11 @@ class RetCodeService extends Service {
       temp[name] = b.key;
       measures.map(item => {
         if (b[item].buckets) {
-          if (item === 'count') temp[item] = b.doc_count;
+          if (item === "count") temp[item] = b.doc_count;
           else temp[item] = b[item].buckets;
         } else {
           temp[item] = b[item].value || 0;
-          if (item === 'count') temp[item] = b.doc_count;
+          if (item === "count") temp[item] = b.doc_count;
         }
       });
       data.push(temp);
@@ -151,7 +151,7 @@ class RetCodeService extends Service {
    * @returns object  返回结果
    * *******************************************************************************************
    */
-  public indicatorRes(params) {
+  public indicatorRes(params: any) {
     const {
       payload: { measures, startTime, endTime, intervalMillis },
       res
@@ -171,7 +171,7 @@ class RetCodeService extends Service {
       temp.format = b.key_as_string;
       measures.map(item => {
         if (b[item].buckets) {
-          if (item === 'count') temp[item] = b.doc_count;
+          if (item === "count") temp[item] = b.doc_count;
           else temp[item] = b[item].buckets;
         } else {
           temp[item] = b[item].value || 0;
@@ -193,7 +193,7 @@ class RetCodeService extends Service {
         .fill(1)
         .map((_item, index) => {
           const currentDate = startTime + index * intervalMillis;
-          const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
+          const formatDate = moment(currentDate).format("YYYY-MM-DD hh:mm:ss");
           leftArray.push({
             ...fillData,
             date: currentDate,
@@ -213,7 +213,7 @@ class RetCodeService extends Service {
         .map((_item, index) => {
           const currentDate =
             data[data.length - 1].date + (index + 1) * intervalMillis;
-          const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
+          const formatDate = moment(currentDate).format("YYYY-MM-DD hh:mm:ss");
           rightArray.push({
             ...fillData,
             date: currentDate,
@@ -272,23 +272,23 @@ class RetCodeService extends Service {
     const name = dimensions[0];
     const aggs: { pv?: any; uv?: any } = {};
     measures.map(item => {
-      if (item === 'pv' || item === 'uv') {
-        if (item === 'pv') {
+      if (item === "pv" || item === "uv") {
+        if (item === "pv") {
           aggs.pv = {
             sum: {
-              field: 'pv'
+              field: "pv"
             }
           };
         } else {
           aggs.uv = {
             cardinality: {
-              field: 'ip.keyword'
+              field: "ip.keyword"
             }
           };
         }
       } else {
-        if (item.includes('_')) {
-          const values = item.split('_');
+        if (item.includes("_")) {
+          const values = item.split("_");
           aggs[item] = {
             [values[0]]: {
               field: `${values[1]}`
@@ -326,23 +326,23 @@ class RetCodeService extends Service {
     console.log(measures, Array.isArray(measures));
     const aggs: { pv?: any; uv?: any } = {};
     measures.map(item => {
-      if (item === 'pv' || item === 'uv') {
-        if (item === 'pv') {
+      if (item === "pv" || item === "uv") {
+        if (item === "pv") {
           aggs.pv = {
             sum: {
-              field: 'pv'
+              field: "pv"
             }
           };
         } else {
           aggs.uv = {
             cardinality: {
-              field: 'ip.keyword'
+              field: "ip.keyword"
             }
           };
         }
       } else {
-        if (item.includes('_')) {
-          const values = item.split('_');
+        if (item.includes("_")) {
+          const values = item.split("_");
           aggs[item] = {
             [values[0]]: {
               field: `${values[1]}`
@@ -360,9 +360,9 @@ class RetCodeService extends Service {
     const aggsQuery = {
       indicator: {
         date_histogram: {
-          field: '@timestamp',
+          field: "@timestamp",
           interval: intervalMillis,
-          format: 'yyyy-MM-dd hh:mm:ss',
+          format: "yyyy-MM-dd hh:mm:ss",
           min_doc_count: 0
         },
         aggs

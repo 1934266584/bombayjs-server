@@ -1,4 +1,3 @@
-// @ts-nocheck
 module.exports = {
   /**
    * 获取 model 实例
@@ -28,12 +27,12 @@ module.exports = {
   async createModel(modelName: string, suffix: string, collectionName: string) {
     const currentModal = await this.getModel(collectionName);
     if (currentModal) {
-      return null;
+      return {};
     } else {
       const module = this.app.models[modelName];
       const model = await module(suffix)();
       this.model[collectionName] = model.model(collectionName);
-      return null;
+      return {};
     }
   }
 };

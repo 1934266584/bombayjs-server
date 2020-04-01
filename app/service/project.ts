@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Service, Context } from "egg";
 
 export default class ProjectService extends Service {
@@ -29,6 +28,7 @@ export default class ProjectService extends Service {
     ctx.validate(this.ProjectValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     if (!query.app_id && type === "wx")
@@ -46,6 +46,7 @@ export default class ProjectService extends Service {
     // 存储数据
     const token = this.app.randomString();
 
+    // @ts-ignore
     const project = ctx.model.Project();
     project.project_name = query.project_name;
     project.token = token;
@@ -67,6 +68,7 @@ export default class ProjectService extends Service {
 
     const result = await project.save();
     // 存储到redis
+    // @ts-ignore
     this._updateProjectCache(token);
     return this.app.retResult(result);
   }
@@ -199,7 +201,13 @@ export default class ProjectService extends Service {
 
   // 新增 | 删除 日报邮件
   // item: 1:日报邮件发送  2：流量峰值邮件发送
-  async handleDaliyEmail(appId: string, email: string, type: number, handleEmali = true, item = 1) {
+  async handleDaliyEmail(
+    appId: string,
+    email: string,
+    type: number,
+    handleEmali = true,
+    item = 1
+  ) {
     if (!appId) return this.app.retError("appId不能为空");
     type = type * 1;
     item = item * 1;
@@ -256,8 +264,8 @@ export default class ProjectService extends Service {
   // 更新redis缓存
   async _updateProjectCache(token: string) {
     if (!token) throw new Error("查询某个项目信息：token不能为空");
-    const project =
-      (await this.ctx.model.Project.findOne({ token }).exec()) || {};
+    // const project =
+    //   (await this.ctx.model.Project.findOne({ token }).exec()) || {};
     // return project;
     // TODO: redis更新删除
     // await this.app.redis.set(token, JSON.stringify(project));
@@ -265,8 +273,8 @@ export default class ProjectService extends Service {
   // 获得某个项目信息
   async getProjectForToken(token: string) {
     if (!token) throw new Error("查询某个项目信息：token不能为空");
-      (await this.ctx.model.Project.findOne({ token }).exec()) || "{}";
-    return 
+    (await this.ctx.model.Project.findOne({ token }).exec()) || "{}";
+    return;
   }
   async getProjectByToken(token: string) {
     return await this.ctx.model.Project.findOne({ token }).exec();

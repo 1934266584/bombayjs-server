@@ -1,11 +1,10 @@
-// @ts-nocheck
 class UserConnector {
   ctx: any;
 
-  constructor(ctx) {
+  constructor(ctx: any) {
     this.ctx = ctx;
   }
-  save(name) {
+  save(name: string) {
     return {
       id: 2,
       name

@@ -1,7 +1,7 @@
 import { Controller } from 'egg';
 
 export default class RetcodeController extends Controller {
-  constructor(ctx) {
+  constructor(ctx: any) {
     super(ctx);
   }
   /**

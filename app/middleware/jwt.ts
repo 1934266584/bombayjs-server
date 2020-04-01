@@ -1,11 +1,12 @@
-// @ts-nocheck
 // 校验用户是否登录
-import * as jwt from 'jsonwebtoken';
+// @ts-ignore
+import * as jwt from "jsonwebtoken";
+import { Context } from "egg";
 
 module.exports = () => {
-  return async (ctx, next) => {
+  return async (ctx: Context, next: Function) => {
     if (ctx.header && ctx.header.authorization) {
-      const parts = ctx.header.authorization.split(' ');
+      const parts = ctx.header.authorization.split(" ");
       if (parts.length === 2) {
         // 取出token
         const scheme = parts[0];
@@ -17,12 +18,12 @@ module.exports = () => {
             ctx.currentUserId = decoded.id;
             await next();
           } catch (err) {
-            if (err.name === 'TokenExpiredError') {
+            if (err.name === "TokenExpiredError") {
               ctx.status = 401;
-              ctx.body = 'Token Expired';
-            } else if (err.name === 'JsonWebTokenError') {
+              ctx.body = "Token Expired";
+            } else if (err.name === "JsonWebTokenError") {
               ctx.status = 401;
-              ctx.body = 'Invalid Token';
+              ctx.body = "Invalid Token";
             } else {
               throw err;
             }
@@ -30,11 +31,11 @@ module.exports = () => {
         }
       } else {
         ctx.status = 401;
-        ctx.body = 'Missing Auth Token';
+        ctx.body = "Missing Auth Token";
       }
     } else {
       ctx.status = 401;
-      ctx.body = 'Missing Auth Token';
+      ctx.body = "Missing Auth Token";
     }
   };
 };

@@ -1,18 +1,17 @@
-// @ts-nocheck
-import { Service } from 'egg';
+import { Service } from "egg";
 
 export default class PageVariateService extends Service {
   listValidate: any;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
     this.listValidate = {
       project_token: {
-        type: 'string',
+        type: "string",
         required: true,
         trim: true,
-        desc: '请选择项目'
+        desc: "请选择项目"
       }
     };
   }
@@ -23,6 +22,7 @@ export default class PageVariateService extends Service {
     ctx.validate(this.listValidate);
     if (ctx.paramErrors) {
       // get error infos from `ctx.paramErrors`;
+      // @ts-ignore
       return this.app.retError(ctx.paramErrors[0].desc);
     }
 
@@ -35,15 +35,15 @@ export default class PageVariateService extends Service {
     console.log(rPage, rEvent);
     const rPages = rPage.map(item => {
       return {
-        tt: 'page',
-        t: 'pv',
+        tt: "page",
+        t: "pv",
         ...item._doc
       };
     });
     const rEvents = rEvent.map(item => {
       return {
-        tt: 'event',
-        t: 'behavior',
+        tt: "event",
+        t: "behavior",
         ...item._doc
       };
     });
