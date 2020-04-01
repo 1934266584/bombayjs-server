@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 module.exports = {
   /**
    * 获取 model 实例
@@ -7,9 +7,12 @@ module.exports = {
   async getModel(collectionName: string) {
     const model = this.model[collectionName] || null;
     const collections = collectionName.split('_');
-    const type = `${this.helper.capitalize(collections[0])}${this.helper.capitalize(collections[1])}`;
+    const type = `${this.helper.capitalize(
+      collections[0]
+    )}${this.helper.capitalize(collections[1])}`;
     if (!model) {
       const module = this.app.models[type];
+      // TODO: 创建model文件 ???
       const collection = await module(collections[2])();
       this.model[collectionName] = collection.model(collectionName);
       return collection.model(collectionName);
@@ -32,5 +35,5 @@ module.exports = {
       this.model[collectionName] = model.model(collectionName);
       return null;
     }
-  },
+  }
 };

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 校验用户是否登录
 import * as jwt from 'jsonwebtoken';
 

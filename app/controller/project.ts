@@ -10,7 +10,7 @@ export default class ProjectController extends Controller {
   // 修改系统信息
   async updateProject() {
     const { ctx } = this;
-    return await ctx.service.project.updateProjectData(ctx);
+    ctx.body = await ctx.service.project.updateProjectData(ctx);
   }
 
   // 根据用户id获取系统列表

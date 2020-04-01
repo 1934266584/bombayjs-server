@@ -1,5 +1,6 @@
+// @ts-nocheck
 import { Service } from 'egg';
-import { ObjectId } from '_@types_bson@4.0.0@@types/bson';
+import { ObjectId } from '@types/bson';
 
 class BaseService extends Service {
   constructor(props) {

@@ -1,14 +1,17 @@
-import Report from './web_report';
+import Report from "./web_report";
 
 module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
-  const schema = new Schema({
-    ...Report,
-    msg: String,
-    src: String,
-    tagName: String,
-  }, { timestamps: true });
+  const schema = new Schema(
+    {
+      ...Report,
+      msg: String,
+      src: String,
+      tagName: String
+    },
+    { timestamps: true }
+  );
   schema.index({ t: 1, page: 1 });
   schema.index({ page: 1 });
 

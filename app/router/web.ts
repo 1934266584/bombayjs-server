@@ -3,7 +3,9 @@ import { Application } from 'egg';
 module.exports = (app: Application) => {
   const apiV1Router = app.router.namespace('/api/v1');
   const { controller, middleware } = app;
+  // TODO: index 文件呢？？？
   const { index, report, retcode } = controller.web;
+  // const { index, report } = controller.web;
 
   const tokenRequired = middleware.tokenRequired();
   apiV1Router.get('/web', tokenRequired, index.index);

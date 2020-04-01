@@ -3,6 +3,7 @@ declare module 'egg' {
   type MongooseModel = {
     [key: string]: (key?:any)=> mongoose.Model<any>
   };
+  
   interface Application {
     models: MongooseModel;
     retError:(errorMsg?: string, errorCode?: number, data?: {})=> void;

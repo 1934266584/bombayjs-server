@@ -64,6 +64,25 @@ $ npm start
 **wx api**
 
 
+先进入router.ts 路由分发
+
+再到router文件下对应的各个文件，文件再把对应的接口和请求方式分发的controller,其中可能还会加对应的中间层
+
+controller再调用对应的service服务
+
+service再处理逻辑并调用对应的graphql做数据库的查询
+
+graphql定义查询返回的字段
+
+model定义返回字段的详情
+
+extend 是自己添加的一些公共方法
+
+schedule 定时任务更新用户的位置，与elasticsearch结合使用
+
+
+
+
 
 ### kafka -- mac
 安装

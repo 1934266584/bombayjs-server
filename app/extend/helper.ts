@@ -1,3 +1,4 @@
+// @ts-nocheck
 module.exports = {
   /**
    * 截取ip前三位
@@ -13,8 +14,11 @@ module.exports = {
    * @param param0  需要转换的字符串
    * @param lowerRest false 首字母大写，其他不变   true 首字母大写，其他都小写
    */
-  capitalize([ first, ...rest ]: any, lowerRest: boolean = false) {
-   return first.toUpperCase() + (lowerRest ? rest.join('').toLowerCase() : rest.join(''));
+  capitalize([first, ...rest]: any, lowerRest: boolean = false) {
+    return (
+      first.toUpperCase() +
+      (lowerRest ? rest.join('').toLowerCase() : rest.join(''))
+    );
   },
   /**
    * query 转换
@@ -28,7 +32,7 @@ module.exports = {
       return obj;
     }
     qs.split(eq).reduce((previousValue, currentValue) => {
-      const [ key, value ] = currentValue.split(seq);
+      const [key, value] = currentValue.split(seq);
       previousValue[key.trim()] = value.trim();
       return previousValue;
     }, obj);
@@ -39,8 +43,8 @@ module.exports = {
       data: res,
       code: 200,
       message: 'success',
-      success: true,
+      success: true
     };
     this.ctx.status = 200;
-  },
+  }
 };

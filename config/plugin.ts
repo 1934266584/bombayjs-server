@@ -10,10 +10,10 @@ const plugin: EggPlugin = {
     enable: true,
     package: 'egg-mongoose',
   },
-  redis: {
-    enable: true,
-    package: 'egg-redis',
-  },
+  // redis: {
+  //   enable: true,
+  //   package: 'egg-redis',
+  // },
   cors: {
     enable: true,
     package: 'egg-cors',
@@ -26,14 +26,14 @@ const plugin: EggPlugin = {
     enable: true,
     package: 'egg-valparams',
   },
-  kafkaNode : {
-    enable: true,
-    package: 'egg-kafka-node',
-  },
-  elasticsearch : {
-    enable: true,
-    package: 'egg-esearch',
-  },
+  // kafkaNode : {
+  //   enable: true,
+  //   package: 'egg-kafka-node',
+  // },
+  // elasticsearch : {
+  //   enable: true,
+  //   package: 'egg-esearch',
+  // },
   graphql: {
     enable: true,
     package: '@switchdog/egg-graphql',

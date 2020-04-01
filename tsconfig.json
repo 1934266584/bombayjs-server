@@ -1,6 +1,9 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "target": "es2017",
     "module": "commonjs",
     "strict": true,
@@ -13,8 +16,8 @@
     "noEmitOnError": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
     "strictPropertyInitialization": false,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,

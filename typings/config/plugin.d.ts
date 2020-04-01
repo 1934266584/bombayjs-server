@@ -1,4 +1,4 @@
-// This file is created by egg-ts-helper@1.25.6
+// This file is created by egg-ts-helper@1.25.7
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
@@ -16,11 +16,9 @@ import 'egg-jsonp';
 import 'egg-view';
 import 'egg-validate';
 import 'egg-mongoose';
-import 'egg-redis';
 import 'egg-cors';
 import 'egg-router-plus';
 import 'egg-valparams';
-import 'egg-esearch';
 import '@switchdog/egg-graphql';
 import { EggPluginItem } from 'egg';
 declare module 'egg' {
@@ -39,11 +37,9 @@ declare module 'egg' {
     view?: EggPluginItem;
     validate?: EggPluginItem;
     mongoose?: EggPluginItem;
-    redis?: EggPluginItem;
     cors?: EggPluginItem;
     routerPlus?: EggPluginItem;
     valparams?: EggPluginItem;
-    elasticsearch?: EggPluginItem;
     graphql?: EggPluginItem;
   }
 }

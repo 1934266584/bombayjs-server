@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 import { Service, Context } from 'egg';
 // tslint:disable-next-line:no-var-requires
 const moment = require('moment');
@@ -21,16 +21,16 @@ class ReportService extends Service {
    */
   public async saveDataToEs(payload) {
     return await this.app.curl(this.app.config.kafkaSubmit, {
-        dataType: 'json',
-        method: 'POST',
-        contentType: 'json',
-        data: {
-          event: 'web-report-collect',
-          id: UUid.v1(),
-          timestamp: new Date().getTime(),
-          eventLog: payload,
-        },
-      });
+      dataType: 'json',
+      method: 'POST',
+      contentType: 'json',
+      data: {
+        event: 'web-report-collect',
+        id: UUid.v1(),
+        timestamp: new Date().getTime(),
+        eventLog: payload
+      }
+    });
   }
   /**
    * *******************************************************************************************
@@ -40,12 +40,15 @@ class ReportService extends Service {
    */
   public async getLocation(ip) {
     const isExist = await this.app.elasticsearch.indices.exists({
-      index: 'frontend-event-log-web-report-location',
+      index: 'frontend-event-log-web-report-location'
     });
     if (isExist) {
       return this.getLocationToEs(ip);
     } else {
-      return { location: { lng: null, lat: null, }, ad_info: { nation: null, province: null, city: null, adcode: 0, }, };
+      return {
+        location: { lng: null, lat: null },
+        ad_info: { nation: null, province: null, city: null, adcode: 0 }
+      };
     }
   }
   /**
@@ -60,19 +63,27 @@ class ReportService extends Service {
       body: {
         query: {
           match: {
-            ip: ipl,
-          },
-        },
-      },
+            ip: ipl
+          }
+        }
+      }
     });
     if (res.hits.hits.length > 0) {
       const { location, ad_info } = res.hits.hits[0]._source;
-      if (ad_info.nation === '中国' && (ad_info.province === '香港特别行政区' || ad_info.province === '台湾省' || ad_info.province === '澳门特别行政区')) {
+      if (
+        ad_info.nation === '中国' &&
+        (ad_info.province === '香港特别行政区' ||
+          ad_info.province === '台湾省' ||
+          ad_info.province === '澳门特别行政区')
+      ) {
         ad_info.nation = `${ad_info.nation}${ad_info.province}`;
       }
       return { location, ad_info };
     } else {
-      return { location: { lng: null, lat: null, }, ad_info: { nation: null, province: null, city: null, adcode: 0, }, };
+      return {
+        location: { lng: null, lat: null },
+        ad_info: { nation: null, province: null, city: null, adcode: 0 }
+      };
     }
   }
   /**
@@ -81,9 +92,11 @@ class ReportService extends Service {
    */
   async save(payload) {
     return await this.app.elasticsearch.index({
-      index: `frontend-event-log-web-report-collect-${moment().format('YYYY-MM')}`,
+      index: `frontend-event-log-web-report-collect-${moment().format(
+        'YYYY-MM'
+      )}`,
       type: '_doc',
-      body: payload,
+      body: payload
     });
     // await this.ctx.kafka.sendMessageSync({
     //   topic: 'reportTopic', // 指定 kafka 目录下 的topic

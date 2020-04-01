@@ -1,15 +1,20 @@
+// @ts-nocheck
 import { Service } from 'egg';
-
 
 export default class PageVariateService extends Service {
   listValidate: any;
 
   constructor(props) {
     super(props);
-    
+
     this.listValidate = {
-      project_token: { type: 'string', required: true, trim: true, desc: '请选择项目' },
-    }
+      project_token: {
+        type: 'string',
+        required: true,
+        trim: true,
+        desc: '请选择项目'
+      }
+    };
   }
   async list() {
     const { ctx } = this;
@@ -22,27 +27,27 @@ export default class PageVariateService extends Service {
     }
 
     const cond: any = {
-      project_token: query.project_token,
+      project_token: query.project_token
     };
     const page = ctx.model.PageVariate.find(cond);
     const event = ctx.model.EventVariate.find(cond);
-    const [ rPage, rEvent ] = await Promise.all([ page, event ]);
-    console.log(rPage, rEvent)
+    const [rPage, rEvent] = await Promise.all([page, event]);
+    console.log(rPage, rEvent);
     const rPages = rPage.map(item => {
       return {
         tt: 'page',
         t: 'pv',
-        ...item._doc,
-      }
-    })
+        ...item._doc
+      };
+    });
     const rEvents = rEvent.map(item => {
       return {
         tt: 'event',
         t: 'behavior',
-        ...item._doc,
-      }
-    })
-    const result = [ ...rPages, ...rEvents ];
+        ...item._doc
+      };
+    });
+    const result = [...rPages, ...rEvents];
 
     return this.app.retResult(result);
   }

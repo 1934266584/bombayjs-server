@@ -1,3 +1,4 @@
+// @ts-nocheck
 class UserConnector {
   ctx: any;
 
@@ -7,14 +8,14 @@ class UserConnector {
   save(name) {
     return {
       id: 2,
-      name,
+      name
     };
   }
   fetchById(id: string) {
     console.log(id);
     return {
       id: 1,
-      name: 'aaa',
+      name: 'aaa'
     };
   }
 }

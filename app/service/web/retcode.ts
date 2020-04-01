@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Service, Context } from 'egg';
 
 // tslint:disable-next-line:no-var-requires
@@ -16,25 +17,25 @@ class RetCodeService extends Service {
     });
     const body = {
       query: {
-        bool : {
+        bool: {
           must: queryParams,
           filter: {
             range: {
               '@timestamp': {
                 gte: moment(startTime),
-                lte: moment(endTime),
-              },
-            },
-          },
-        },
+                lte: moment(endTime)
+              }
+            }
+          }
+        }
       },
       size: pageSize,
       from: (currentPage - 1) * pageSize,
       sort: {
         '@timestamp': {
-          order,
-        },
-      },
+          order
+        }
+      }
     };
     const res = await this.esSearch(body);
     const source: any[] = [];
@@ -50,7 +51,14 @@ class RetCodeService extends Service {
    * ************************************************************************************************
    */
   public async dimension(payload) {
-    const { filters, dimensions, startTime, endTime, order, measures } = payload;
+    const {
+      filters,
+      dimensions,
+      startTime,
+      endTime,
+      order,
+      measures
+    } = payload;
     const filterParams = this.filterParams(filters);
     const aggsQuery = this.aggsDimensionQuery(dimensions, order, measures);
     const body = {
@@ -62,13 +70,13 @@ class RetCodeService extends Service {
             range: {
               '@timestamp': {
                 gte: moment(startTime),
-                lte: moment(endTime),
-              },
-            },
-          },
-        },
+                lte: moment(endTime)
+              }
+            }
+          }
+        }
       },
-      aggs: aggsQuery,
+      aggs: aggsQuery
     };
     const res = await this.esSearch(body);
     return this.dimensionRes(res, dimensions, measures);
@@ -92,13 +100,13 @@ class RetCodeService extends Service {
             range: {
               '@timestamp': {
                 gte: moment(startTime),
-                lte: moment(endTime),
-              },
-            },
-          },
-        },
+                lte: moment(endTime)
+              }
+            }
+          }
+        }
       },
-      aggs: aggsQuery,
+      aggs: aggsQuery
     };
     const res = await this.esSearch(body);
     return this.indicatorRes({ res, payload });
@@ -113,12 +121,13 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public dimensionRes(res, dimensions, measures) {
-    let total: number = 0;                                                      // 返回结果总和
-    const data: any[] = [];                                                  // 查询数据
+    let total: number = 0; // 返回结果总和
+    const data: any[] = []; // 查询数据
     const name = dimensions[0];
-    if (!res.aggregations || res.aggregations[name].buckets.length === 0) return { data: [], total: 0 };
+    if (!res.aggregations || res.aggregations[name].buckets.length === 0)
+      return { data: [], total: 0 };
     res.aggregations[name].buckets.map(b => {
-      const temp: {pv?: number; uv?: number} = {};
+      const temp: { pv?: number; uv?: number } = {};
       temp[name] = b.key;
       measures.map(item => {
         if (b[item].buckets) {
@@ -132,7 +141,7 @@ class RetCodeService extends Service {
       data.push(temp);
       total += b.doc_count;
     });
-    return { data, total, };
+    return { data, total };
   }
   /**
    * *******************************************************************************************
@@ -143,12 +152,21 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public indicatorRes(params) {
-    const { payload: { measures, startTime, endTime, intervalMillis }, res } = params;
-    let total: number = 0;                                                      // 返回结果总和
-    const data: any[] = [];                                                  // 查询数据
-    if (!res.aggregations || res.aggregations.indicator.buckets.length === 0) return { data: [], total: 0 };
+    const {
+      payload: { measures, startTime, endTime, intervalMillis },
+      res
+    } = params;
+    let total: number = 0; // 返回结果总和
+    const data: any[] = []; // 查询数据
+    if (!res.aggregations || res.aggregations.indicator.buckets.length === 0)
+      return { data: [], total: 0 };
     res.aggregations.indicator.buckets.map(b => {
-      const temp: {pv?: number; uv?: number; date?: number; format?: string} = {};
+      const temp: {
+        pv?: number;
+        uv?: number;
+        date?: number;
+        format?: string;
+      } = {};
       temp.date = b.key;
       temp.format = b.key_as_string;
       measures.map(item => {
@@ -171,11 +189,17 @@ class RetCodeService extends Service {
       measures.map(item => {
         fillData[item] = 0;
       });
-      Array(Number.parseInt(diff)).fill(1).map((_item, index) => {
-        const currentDate = startTime + index * intervalMillis;
-        const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
-        leftArray.push({ ...fillData, date: currentDate, format: formatDate });
-      });
+      Array(Number.parseInt(diff))
+        .fill(1)
+        .map((_item, index) => {
+          const currentDate = startTime + index * intervalMillis;
+          const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
+          leftArray.push({
+            ...fillData,
+            date: currentDate,
+            format: formatDate
+          });
+        });
     }
     // 右补全
     if (data[data.length - 1].date < endTime) {
@@ -184,14 +208,21 @@ class RetCodeService extends Service {
       measures.map(item => {
         fillData[item] = 0;
       });
-      Array(Number.parseInt(diff)).fill(1).map((_item, index) => {
-        const currentDate = data[data.length - 1].date + (index + 1) * intervalMillis;
-        const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
-        rightArray.push({ ...fillData, date: currentDate, format: formatDate });
-      });
+      Array(Number.parseInt(diff))
+        .fill(1)
+        .map((_item, index) => {
+          const currentDate =
+            data[data.length - 1].date + (index + 1) * intervalMillis;
+          const formatDate = moment(currentDate).format('YYYY-MM-DD hh:mm:ss');
+          rightArray.push({
+            ...fillData,
+            date: currentDate,
+            format: formatDate
+          });
+        });
     }
-    const allData = [ ...leftArray, ...data, ...rightArray ];
-    return { data: allData, total, };
+    const allData = [...leftArray, ...data, ...rightArray];
+    return { data: allData, total };
   }
   /**
    * *******************************************************************************************
@@ -200,11 +231,17 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public async esSearch(body) {
-    return await this.app.elasticsearch.search({
-      index: 'frontend-event-log-web-report-collect-*',
-      type: '_doc',
-      body,
-    });
+    return {
+      hits: {
+        hits: []
+      }
+    };
+    // TODO: 关了elasticsearch
+    // return await this.app.elasticsearch.search({
+    //   index: 'frontend-event-log-web-report-collect-*',
+    //   type: '_doc',
+    //   body
+    // });
   }
   /**
    * *******************************************************************************************
@@ -213,11 +250,12 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public filterParams(filters) {
-    let filterQuery: any[] = [];                                                // 筛选过滤参数对象
-    Object.keys(filters).map(item => {                                          // 拼装es过滤参数
+    let filterQuery: any[] = []; // 筛选过滤参数对象
+    Object.keys(filters).map(item => {
+      // 拼装es过滤参数
       const match = {};
       match[`${item}`] = filters[`${item}`];
-      filterQuery = [ ...filterQuery, { match }];
+      filterQuery = [...filterQuery, { match }];
     });
     return filterQuery;
   }
@@ -230,33 +268,37 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public aggsDimensionQuery(dimensions, order, measures) {
-    const aggsQuery: {pv?: any } = {};
+    const aggsQuery: { pv?: any } = {};
     const name = dimensions[0];
-    const aggs: { pv?: any, uv?: any } = {};
+    const aggs: { pv?: any; uv?: any } = {};
     measures.map(item => {
       if (item === 'pv' || item === 'uv') {
         if (item === 'pv') {
-          aggs.pv = {sum: {
-            field: 'pv',
-          }};
+          aggs.pv = {
+            sum: {
+              field: 'pv'
+            }
+          };
         } else {
-          aggs.uv = {cardinality: {
-            field: 'ip.keyword',
-          }};
+          aggs.uv = {
+            cardinality: {
+              field: 'ip.keyword'
+            }
+          };
         }
       } else {
         if (item.includes('_')) {
           const values = item.split('_');
           aggs[item] = {
-            [values[0]] : {
-              field: `${values[1]}`,
-            },
+            [values[0]]: {
+              field: `${values[1]}`
+            }
           };
         } else {
           aggs[item] = {
             terms: {
-              field: `${item}.keyword`,
-            },
+              field: `${item}.keyword`
+            }
           };
         }
       }
@@ -265,10 +307,10 @@ class RetCodeService extends Service {
       terms: {
         field: `${name}.keyword`,
         order: {
-          _count: order.toLowerCase(),
-        },
+          _count: order.toLowerCase()
+        }
       },
-      aggs,
+      aggs
     };
     return aggsQuery;
   }
@@ -280,46 +322,51 @@ class RetCodeService extends Service {
    * 注： 目前只取一个参数
    * *******************************************************************************************
    */
-  public aggsIndicatorQuery(measures, intervalMillis) {
-    const aggs: { pv?: any, uv?: any } = {};
+  public aggsIndicatorQuery(measures = [], intervalMillis) {
+    console.log(measures, Array.isArray(measures));
+    const aggs: { pv?: any; uv?: any } = {};
     measures.map(item => {
       if (item === 'pv' || item === 'uv') {
         if (item === 'pv') {
-          aggs.pv = {sum: {
-            field: 'pv',
-          }};
+          aggs.pv = {
+            sum: {
+              field: 'pv'
+            }
+          };
         } else {
-          aggs.uv = {cardinality: {
-            field: 'ip.keyword',
-          }};
+          aggs.uv = {
+            cardinality: {
+              field: 'ip.keyword'
+            }
+          };
         }
       } else {
         if (item.includes('_')) {
           const values = item.split('_');
           aggs[item] = {
-            [values[0]] : {
-              field: `${values[1]}`,
-            },
+            [values[0]]: {
+              field: `${values[1]}`
+            }
           };
         } else {
           aggs[item] = {
             terms: {
-              field: `${item}.keyword`,
-            },
+              field: `${item}.keyword`
+            }
           };
         }
       }
     });
     const aggsQuery = {
       indicator: {
-        date_histogram : {
-          field : '@timestamp',
+        date_histogram: {
+          field: '@timestamp',
           interval: intervalMillis,
           format: 'yyyy-MM-dd hh:mm:ss',
-          min_doc_count : 0,
+          min_doc_count: 0
         },
-        aggs,
-      },
+        aggs
+      }
     };
     return aggsQuery;
   }

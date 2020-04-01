@@ -1,7 +1,11 @@
-// This file is created by egg-ts-helper@1.25.6
+// This file is created by egg-ts-helper@1.25.7
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
+type AnyClass = new (...args: any[]) => any;
+type AnyFunc<T = any> = (...args: any[]) => T;
+type CanExportFunc = AnyFunc<Promise<any>> | AnyFunc<IterableIterator<any>>;
+type AutoInstanceType<T, U = T extends CanExportFunc ? T : T extends AnyFunc ? ReturnType<T> : T> = U extends AnyClass ? InstanceType<U> : U;
 import ExportActionToken from '../../../app/service/actionToken';
 import ExportDimension from '../../../app/service/dimension';
 import ExportEventVariate from '../../../app/service/eventVariate';
@@ -17,19 +21,19 @@ import ExportWebRetcode from '../../../app/service/web/retcode';
 
 declare module 'egg' {
   interface IService {
-    actionToken: ExportActionToken;
-    dimension: ExportDimension;
-    eventVariate: ExportEventVariate;
-    group: ExportGroup;
-    measure: ExportMeasure;
-    pageVariate: ExportPageVariate;
-    project: ExportProject;
-    user: ExportUser;
+    actionToken: AutoInstanceType<typeof ExportActionToken>;
+    dimension: AutoInstanceType<typeof ExportDimension>;
+    eventVariate: AutoInstanceType<typeof ExportEventVariate>;
+    group: AutoInstanceType<typeof ExportGroup>;
+    measure: AutoInstanceType<typeof ExportMeasure>;
+    pageVariate: AutoInstanceType<typeof ExportPageVariate>;
+    project: AutoInstanceType<typeof ExportProject>;
+    user: AutoInstanceType<typeof ExportUser>;
     web: {
-      base: ExportWebBase;
-      error: ExportWebError;
-      report: ExportWebReport;
-      retcode: ExportWebRetcode;
+      base: AutoInstanceType<typeof ExportWebBase>;
+      error: AutoInstanceType<typeof ExportWebError>;
+      report: AutoInstanceType<typeof ExportWebReport>;
+      retcode: AutoInstanceType<typeof ExportWebRetcode>;
     }
   }
 }

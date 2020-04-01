@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Service } from 'egg';
 
 interface Conditions {
@@ -14,14 +15,34 @@ export default class PageVariateService extends Service {
   constructor(props) {
     super(props);
     this.ProjectValidate = {
-      project_token: { type: 'string', required: true, trim: true, desc: '请选择项目' },
-      name: { type: 'string', required: true, trim: true, desc: '页面名称不能为空' },
-      path: { type: 'string', required: true, trim: true, desc: '页面标识符不能为空' },
+      project_token: {
+        type: 'string',
+        required: true,
+        trim: true,
+        desc: '请选择项目'
+      },
+      name: {
+        type: 'string',
+        required: true,
+        trim: true,
+        desc: '页面名称不能为空'
+      },
+      path: {
+        type: 'string',
+        required: true,
+        trim: true,
+        desc: '页面标识符不能为空'
+      }
     };
 
     this.listValidate = {
-      project_token: { type: 'string', required: true, trim: true, desc: '请选择项目' },
-    }
+      project_token: {
+        type: 'string',
+        required: true,
+        trim: true,
+        desc: '请选择项目'
+      }
+    };
   }
   async add() {
     const { ctx } = this;
@@ -33,14 +54,20 @@ export default class PageVariateService extends Service {
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     // 检验是否存在
-    let search = await ctx.model.PageVariate.findOne({ project_token: query.project_token, name: query.name }).exec();
+    let search = await ctx.model.PageVariate.findOne({
+      project_token: query.project_token,
+      name: query.name
+    }).exec();
     if (search) return this.app.retError('页面已存在');
 
-    search = await ctx.model.PageVariate.findOne({ project_token: query.project_token, path: query.path }).exec();
+    search = await ctx.model.PageVariate.findOne({
+      project_token: query.project_token,
+      path: query.path
+    }).exec();
     if (search) return this.app.retError('页面已存在');
 
     const variate = new ctx.model.PageVariate();
-    variate.user_id = [ ctx.currentUserId || '' ];
+    variate.user_id = [ctx.currentUserId || ''];
     variate.project_token = query.project_token;
     variate.name = query.name;
     variate.path = query.path;
@@ -61,7 +88,7 @@ export default class PageVariateService extends Service {
     }
 
     const cond: any = {
-      project_token: query.project_token,
+      project_token: query.project_token
     };
     if (query._id) cond._id = query._id;
     if (query.name) cond.name = query.name;
@@ -88,15 +115,25 @@ export default class PageVariateService extends Service {
       // get error infos from `ctx.paramErrors`;
       return this.app.retError(ctx.paramErrors[0].desc);
     }
-    const variate = await ctx.model.PageVariate.findOne({ _id: query._id }).exec();
+    const variate = await ctx.model.PageVariate.findOne({
+      _id: query._id
+    }).exec();
     if (!variate) return this.app.retError('页面不存在');
 
     // 检验是否存在
-    let search = await ctx.model.PageVariate.findOne({ project_token: query.project_token, name: query.name, }).exec();
-    if (search && search.id !== variate.id) return this.app.retError('页面已存在');
+    let search = await ctx.model.PageVariate.findOne({
+      project_token: query.project_token,
+      name: query.name
+    }).exec();
+    if (search && search.id !== variate.id)
+      return this.app.retError('页面已存在');
 
-    search = await ctx.model.PageVariate.findOne({ project_token: query.project_token, path: query.path, }).exec();
-    if (search && search.id !== variate.id) return this.app.retError('页面已存在');
+    search = await ctx.model.PageVariate.findOne({
+      project_token: query.project_token,
+      path: query.path
+    }).exec();
+    if (search && search.id !== variate.id)
+      return this.app.retError('页面已存在');
 
     variate.name = query.name;
     variate.path = query.path;
@@ -116,16 +153,15 @@ export default class PageVariateService extends Service {
       return this.app.retError(ctx.paramErrors[0].desc);
     }
     const conditions: Conditions = {
-      user_id: ctx.currentUserId ,
-      project_token: query.project_token,
+      user_id: ctx.currentUserId,
+      project_token: query.project_token
     };
 
     if (query.name) conditions.name = new RegExp(`.*${query.name}.*`);
-    if (query.is_use === 0 || query.is_use === 1) conditions.is_use = query.is_use;
+    if (query.is_use === 0 || query.is_use === 1)
+      conditions.is_use = query.is_use;
 
-    const result = await ctx.model.PageVariate
-      .find(conditions)
-      .exec() || [];
+    const result = (await ctx.model.PageVariate.find(conditions).exec()) || [];
 
     return this.app.retResult(result);
   }
