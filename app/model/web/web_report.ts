@@ -16,6 +16,7 @@ export default {
   ct: { type: String }, // 网络
   _v: { type: String }, // 脚本sdk版本
   o: { type: String }, // 原始url
+  user: { type: Object }, // 用户信息
 
   browser: { type: String }, // 浏览器名称
   borwser_version: { type: String }, // 浏览器版本
