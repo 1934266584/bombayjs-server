@@ -3,13 +3,23 @@ import { Service, Context } from "egg";
 
 // tslint:disable-next-line:no-var-requires
 const moment = require("moment");
+const _ = require("lodash");
 
 class RetCodeService extends Service {
   constructor(ctx: Context) {
     super(ctx);
   }
   public async search(payload: any) {
-    const { startTime, endTime, query, currentPage, pageSize, order } = payload;
+    const {
+      startTime,
+      endTime,
+      query,
+      currentPage,
+      pageSize,
+      order,
+      type,
+      projectToken
+    } = payload;
     const queryParams: any[] = [];
     const keys = Object.keys(query);
     keys.map(item => {
@@ -37,10 +47,10 @@ class RetCodeService extends Service {
         }
       }
     };
-    const res = await this.esSearch(body);
+    const res = await this.esSearch(body, type, projectToken);
     const source: any[] = [];
     res.hits.hits.map(item => {
-      source.push(item._source);
+      source.push(item);
     });
     return { data: source, total: res.hits.hits.length };
   }
@@ -230,10 +240,48 @@ class RetCodeService extends Service {
    * @returns object  es查询结果
    * *******************************************************************************************
    */
-  public async esSearch(body) {
+  public async esSearch(body, type, projectToken) {
+    if (!type) {
+      return {
+        hits: {
+          hits: []
+        }
+      };
+    }
+    const { ctx } = this;
+
+    let hits = [];
+    if (Array.isArray(type)) {
+      const result = await Promise.all(
+        type.map(item => {
+          let webModel = ctx.app.models[`Web${_.capitalize(item)}`](
+            projectToken
+          );
+          return webModel
+            .find({
+              t: item
+            })
+            .exec();
+        })
+      );
+
+      hits = result.reduce(
+        (preValue, currentValue) => preValue.concat(currentValue),
+        []
+      );
+    } else {
+      let webModel = ctx.app.models[`Web${_.capitalize(type)}`](projectToken);
+      hits =
+        (await webModel
+          .find({
+            t: type
+          })
+          .exec()) || [];
+    }
+
     return {
       hits: {
-        hits: []
+        hits: hits
       }
     };
     // TODO: 关了elasticsearch
