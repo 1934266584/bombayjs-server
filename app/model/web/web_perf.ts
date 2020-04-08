@@ -4,7 +4,19 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const schema = new mongoose.Schema(
     {
-      ...Report
+      ...Report,
+      dns: { type: Number },
+      tcp: { type: Number },
+      ssl: { type: Number },
+      ttfb: { type: Number },
+      trans: { type: Number },
+      dom: { type: Number },
+      res: { type: Number },
+      firstbyte: { type: Number },
+      fpt: { type: Number },
+      tti: { type: Number },
+      ready: { type: Number },
+      load: { type: Number }
     },
     { timestamps: true }
   );

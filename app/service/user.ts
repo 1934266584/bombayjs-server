@@ -1,8 +1,8 @@
-import { Service, Context } from 'egg';
+import { Service, Context } from "egg";
 // tslint:disable-next-line:no-var-requires
-const crypto = require('crypto');
+const crypto = require("crypto");
 // tslint:disable-next-line:no-var-requires
-const _ = require('lodash');
+const _ = require("lodash");
 
 /**
  * Test Service
@@ -19,17 +19,19 @@ export default class UserService extends Service {
     const userName = query.userName;
     const password = query.password;
 
-    if (!userName) return this.app.retError('用户登录：userName不能为空');
-    if (!password) return this.app.retError('用户登录：passWord不能为空');
+    if (!userName) return this.app.retError("用户登录：userName不能为空");
+    if (!password) return this.app.retError("用户登录：passWord不能为空");
 
     const userInfo = (await this.getUserInfoForUserName(userName)) || {};
     const newPwd = crypto
-      .createHmac('sha256', password)
+      .createHmac("sha256", password)
       .update(this.app.config.user_pwd_salt_addition)
-      .digest('hex');
+      .digest("hex");
 
-    if (userInfo.password !== newPwd) return this.app.retError('用户密码不正确！');
-    if (userInfo.is_use !== 0) return this.app.retError('用户被冻结不能登录，请联系管理员！');
+    if (userInfo.password !== newPwd)
+      return this.app.retError("用户密码不正确！");
+    if (userInfo.is_use !== 0)
+      return this.app.retError("用户被冻结不能登录，请联系管理员！");
 
     const token = await this.service.actionToken.apply(userInfo._id);
     console.log(token);
@@ -41,11 +43,11 @@ export default class UserService extends Service {
     //   this.app.config.user_login_timeout
     // );
     const returnUser = _.pick(userInfo, [
-      'system_ids',
-      'is_use',
-      'level',
-      'createdAt',
-      'user_name'
+      "system_ids",
+      "is_use",
+      "level",
+      "createdAt",
+      "user_name"
     ]);
     returnUser.token = token;
     returnUser.id = userInfo._id;
@@ -63,25 +65,25 @@ export default class UserService extends Service {
     const userName = query.userName;
     const password = query.password;
 
-    if (!userName) return this.app.retError('用户登录：userName不能为空');
-    if (!password) return this.app.retError('用户登录：passWord不能为空');
+    if (!userName) return this.app.retError("用户登录：userName不能为空");
+    if (!password) return this.app.retError("用户登录：passWord不能为空");
 
     // 检测用户是否存在
     const userInfo = await this.getUserInfoForUserName(userName);
-    if (userInfo._id) return this.app.retError('用户已存在！');
+    if (userInfo._id) return this.app.retError("用户已存在！");
 
     const newPwd = crypto
-      .createHmac('sha256', password)
+      .createHmac("sha256", password)
       .update(this.app.config.user_pwd_salt_addition)
-      .digest('hex');
+      .digest("hex");
 
     // 新增用户
     const user = new this.ctx.model.User();
     user.user_name = userName;
     user.password = newPwd;
-    user.level = userName === 'admin' ? 0 : 1;
+    user.level = userName === "admin" ? 0 : 1;
     const result = (await user.save()) || {};
-    result.password = '';
+    result.password = "";
 
     return this.app.retResult(result);
   }
@@ -120,15 +122,15 @@ export default class UserService extends Service {
   async setIsUse(ctx: Context) {
     const query = ctx.request.body;
     let isUse = query.isUse || 0;
-    const id = query.id || '';
-    if (!id) return this.app.retError('冻结解冻用户：id不能为空');
+    const id = query.id || "";
+    if (!id) return this.app.retError("冻结解冻用户：id不能为空");
 
     // 冻结用户信息
     isUse = isUse * 1;
     const result = await this.ctx.model.User.update(
       { _id: id },
       { is_use: isUse },
-      { multi: true },
+      { multi: true }
     ).exec();
     // 清空登录态
     return this.app.retResult(result);
@@ -142,11 +144,11 @@ export default class UserService extends Service {
    */
   async delete(ctx: Context) {
     const query = ctx.request.body;
-    const id = query.id || '';
-    if (!id) return this.app.retError('删除用户：id不能为空');
+    const id = query.id || "";
+    if (!id) return this.app.retError("删除用户：id不能为空");
     // 删除
     const result = await this.ctx.model.User.findOneAndRemove({
-      _id: id,
+      _id: id
     }).exec();
     // 清空登录态
     return this.app.retResult(result);
@@ -161,23 +163,24 @@ export default class UserService extends Service {
     const id = ctx.currentUserId;
     // TODO: redis里面查用户 现在是写死的
     // let user_info: any = await this.app.redis.get(`${id}_user_login`);
-    let user_info: any = JSON.stringify({
-      is_use: 0,
-    });
+    let user_info: any = "";
 
     if (user_info) {
       user_info = JSON.parse(user_info);
-      if (user_info.is_use !== 0) return this.app.retError('获取当前用户信息：用户被冻结不能登录，请联系管理员！');
+      if (user_info.is_use !== 0)
+        return this.app.retError(
+          "获取当前用户信息：用户被冻结不能登录，请联系管理员！"
+        );
     } else {
       user_info = await this.ctx.model.User.findOne({ _id: id }).exec();
     }
 
     if (user_info) {
-      const returnUser = _.omit(user_info, [ 'password', '_id' ]);
+      const returnUser = _.omit(user_info, ["password", "_id"]);
       returnUser.id = user_info._id;
       return this.app.retResult(returnUser);
     } else {
-      return this.app.retError('获取当前用户信息：用户不存在');
+      return this.app.retError("获取当前用户信息：用户不存在");
     }
   }
 }

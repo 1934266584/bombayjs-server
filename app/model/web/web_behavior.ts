@@ -5,11 +5,7 @@ module.exports = app => {
   const schema = new mongoose.Schema(
     {
       ...Report,
-      healthy: { type: Number },
-      stay: { type: Number },
-      errcount: { type: Number },
-      apisucc: { type: Number },
-      apifail: { type: Number }
+      behaivor: { type: Object },
     },
     { timestamps: true }
   );
