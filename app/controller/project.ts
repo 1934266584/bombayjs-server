@@ -1,4 +1,4 @@
-import { Controller } from 'egg';
+import { Controller } from "egg";
 
 export default class ProjectController extends Controller {
   // 新增系统
@@ -24,7 +24,8 @@ export default class ProjectController extends Controller {
     const { ctx } = this;
     const query = ctx.request.query;
     const appId = query.appId;
-    ctx.body = await ctx.service.project.getProjectForDb(appId);
+    const token = query.token;
+    ctx.body = await ctx.service.project.getProjectForDb(appId, token);
   }
 
   // 系统列表
@@ -59,6 +60,12 @@ export default class ProjectController extends Controller {
     const email = query.email;
     const type = query.type || 1;
     const item = query.item || 1;
-    ctx.body = await ctx.service.project.handleDaliyEmail(appId, email, type, true, item);
+    ctx.body = await ctx.service.project.handleDaliyEmail(
+      appId,
+      email,
+      type,
+      true,
+      item
+    );
   }
 }

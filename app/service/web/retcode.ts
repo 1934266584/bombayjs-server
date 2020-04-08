@@ -236,6 +236,38 @@ class RetCodeService extends Service {
   }
   /**
    * *******************************************************************************************
+   * @param type Array 查询类型
+   * @returns object  es查询结果
+   * *******************************************************************************************
+   */
+  public async getCountOfLogs(payload) {
+    const { type, projectToken, startTime, endTime } = payload;
+    console.log(payload);
+    if (!type || type.length === 0) {
+      return this.app.retError("查询对应的日志条数操作：type不能为空");
+    }
+    const { ctx } = this;
+
+    const result = await Promise.all(
+      type.map(item => {
+        let webModel = ctx.app.models[`Web${_.capitalize(item)}`](projectToken);
+        return webModel
+          .find({
+            t: item,
+            begin: { $gte: startTime, $lte: endTime }
+          })
+          .exec();
+      })
+    );
+
+    const counts = result.map((item, index) => ({
+      actionType: type[index],
+      times: item.length
+    }));
+    return counts;
+  }
+  /**
+   * *******************************************************************************************
    * @param body object es查询参数
    * @returns object  es查询结果
    * *******************************************************************************************

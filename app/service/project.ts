@@ -77,8 +77,10 @@ export default class ProjectService extends Service {
   async updateProjectData(ctx: Context) {
     const query = ctx.request.body;
     const appId = query.app_id;
+    const token = query.token;
     // 参数校验
-    if (!appId) return this.app.retError("更新项目信息操作：app_id不能为空");
+    if (!appId && !token)
+      return this.app.retError("更新项目信息操作：app_id不能为空");
 
     const update = {
       $set: {
@@ -98,11 +100,19 @@ export default class ProjectService extends Service {
         is_daily_use: query.is_daily_use || 0
       }
     };
-    const result = await this.ctx.model.Project.update(
-      { app_id: appId },
-      update,
-      { multi: true }
-    ).exec();
+    let result;
+    if (appId) {
+      result = await this.ctx.model.Project.update({ app_id: appId }, update, {
+        multi: true
+      }).exec();
+    }
+
+    if (token) {
+      result = await this.ctx.model.Project.update({ token }, update, {
+        multi: true
+      }).exec();
+    }
+
     // 更新redis缓存
     this._updateProjectCache(appId);
     return this.app.retResult(result);
@@ -120,10 +130,18 @@ export default class ProjectService extends Service {
   }
 
   // 获得某个项目信息(数据库)
-  async getProjectForDb(appId: string) {
-    if (!appId) return this.app.retError("查询某个项目信息：appId不能为空");
-    const result =
-      (await this.ctx.model.Project.findOne({ app_id: appId }).exec()) || {};
+  async getProjectForDb(appId: string, token: string) {
+    if (!appId && !token)
+      return this.app.retError("查询某个项目信息：appId不能为空");
+    let result;
+    if (appId) {
+      result =
+        (await this.ctx.model.Project.findOne({ app_id: appId }).exec()) || {};
+    }
+    if (token) {
+      result = (await this.ctx.model.Project.findOne({ token }).exec()) || {};
+    }
+
     return this.app.retResult(result);
   }
 
@@ -181,11 +199,24 @@ export default class ProjectService extends Service {
   async deleteProject(ctx: Context) {
     const query = ctx.request.body;
     const appId = query.appId;
-    if (!appId) return this.app.retError("删除某个系统：appId不能为空");
+    const token = query.token;
 
-    const result = await this.ctx.model.Project.findOneAndDelete({
-      app_id: appId
-    }).exec();
+    if (!appId && !token)
+      return this.app.retError("删除某个系统：appId或者token不能为空");
+
+    let result;
+    if (appId) {
+      result = await this.ctx.model.Project.findOneAndDelete({
+        app_id: appId
+      }).exec();
+    }
+
+    if (token) {
+      result = await this.ctx.model.Project.findOneAndDelete({
+        token: token
+      }).exec();
+    }
+
     // TODO: redis
     // this.app.redis.set(appId, '', 'EX', 200);
     // setTimeout(async () => {
