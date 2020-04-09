@@ -242,7 +242,6 @@ class RetCodeService extends Service {
    */
   public async getCountOfLogs(payload) {
     const { type, projectToken, startTime, endTime } = payload;
-    console.log(payload);
     if (!type || type.length === 0) {
       return this.app.retError("查询对应的日志条数操作：type不能为空");
     }
@@ -265,6 +264,52 @@ class RetCodeService extends Service {
       times: item.length
     }));
     return counts;
+  }
+
+  public async getCountOfLogsInSeven(payload) {
+    const { projectToken } = payload;
+    const type = ["error", "api", "perf", "pv"];
+    const endTime = new Date().getTime();
+    const startTime = endTime - 15 * 24 * 60 * 60 * 1000;
+    const { ctx } = this;
+    const result = await Promise.all(
+      type.map(item => {
+        let webModel = ctx.app.models[`Web${_.capitalize(item)}`](projectToken);
+        return webModel
+          .find({
+            t: item,
+            begin: { $gte: startTime, $lte: endTime }
+          })
+          .exec();
+      })
+    );
+
+    let dateList = [];
+    for (let i = 15; i >= 1; i--) {
+      const dateTime = endTime - i * 24 * 60 * 60 * 1000;
+      const date = new Date(dateTime).toLocaleDateString();
+      dateList.push({
+        date,
+        dateTime
+      });
+    }
+
+    dateList = dateList.map(item => {
+      const { date, dateTime } = item;
+      let obj = {
+        date
+      };
+      result.forEach((item, index) => {
+        obj[type[index]] = item.filter(
+          value =>
+            value.begin > dateTime &&
+            value.begin < dateTime + 24 * 60 * 60 * 1000
+        ).length;
+      });
+      return obj;
+    });
+
+    return dateList;
   }
   /**
    * *******************************************************************************************

@@ -12,5 +12,8 @@ module.exports = (app: Application) => {
   apiV1Router.post("/report/web", report.create);
   apiV1Router.post("/retcode/web", retcode.list);
   apiV1Router.post("/details/web", retcode.search);
+  // 概览的内容接口 （总的统计数）
   apiV1Router.post("/dashboard/countLog", retcode.countLogs);
+  // 概览的内容接口
+  apiV1Router.post("/dashboard/countLogIn15", retcode.countLogsInSeven);
 };

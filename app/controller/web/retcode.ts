@@ -35,6 +35,7 @@ export default class RetcodeController extends Controller {
     }
     ctx.helper.success(res);
   }
+
   public async search() {
     const { ctx, service: { web } } = this;
     const payload = ctx.request.body || {};
@@ -42,11 +43,19 @@ export default class RetcodeController extends Controller {
     res = await web.retcode.search(payload);
     ctx.helper.success(res);
   }
+
   public async countLogs() {
     const { ctx, service: { web } } = this;
     const payload = ctx.request.body || {};
     let res = {};
     res = await web.retcode.getCountOfLogs(payload);
+    ctx.helper.success(res);
+  }
+
+  public async countLogsInSeven() {
+    const { ctx, service: { web } } = this;
+    const payload = ctx.request.body || {};
+    const res = await web.retcode.getCountOfLogsInSeven(payload);
     ctx.helper.success(res);
   }
 }
