@@ -52,7 +52,10 @@ class RetCodeService extends Service {
     res.hits.hits.map(item => {
       source.push(item);
     });
-    return { data: source, total: res.hits.hits.length };
+    return {
+      data: source,
+      total: res.count ? res.count : res.hits.hits.length
+    };
   }
   /**
    * ************************************************************************************************
@@ -255,13 +258,14 @@ class RetCodeService extends Service {
             t: item,
             begin: { $gte: startTime, $lte: endTime }
           })
+          .count()
           .exec();
       })
     );
 
     const counts = result.map((item, index) => ({
       actionType: type[index],
-      times: item.length
+      times: item
     }));
     return counts;
   }
@@ -272,40 +276,47 @@ class RetCodeService extends Service {
     const endTime = new Date().getTime();
     const startTime = endTime - 15 * 24 * 60 * 60 * 1000;
     const { ctx } = this;
-    const result = await Promise.all(
-      type.map(item => {
-        let webModel = ctx.app.models[`Web${_.capitalize(item)}`](projectToken);
-        return webModel
-          .find({
-            t: item,
-            begin: { $gte: startTime, $lte: endTime }
-          })
-          .exec();
-      })
-    );
 
+    const getCountByDay = function(startTime, endTime) {
+      return Promise.all(
+        type.map(item => {
+          let webModel = ctx.app.models[`Web${_.capitalize(item)}`](
+            projectToken
+          );
+          return webModel
+            .find({
+              t: item,
+              begin: { $gte: startTime, $lte: endTime }
+            })
+            .count()
+            .exec();
+        })
+      );
+    };
+
+    let result = [];
     let dateList = [];
     for (let i = 15; i >= 1; i--) {
       const dateTime = endTime - i * 24 * 60 * 60 * 1000;
       const date = new Date(dateTime).toLocaleDateString();
+      result.push(await getCountByDay(dateTime, endTime));
       dateList.push({
-        date,
-        dateTime
+        date
       });
     }
 
-    dateList = dateList.map(item => {
-      const { date, dateTime } = item;
+    console.log(result);
+
+    dateList = dateList.map((item, idx) => {
+      const { date } = item;
       let obj = {
         date
       };
-      result.forEach((item, index) => {
-        obj[type[index]] = item.filter(
-          value =>
-            value.begin > dateTime &&
-            value.begin < dateTime + 24 * 60 * 60 * 1000
-        ).length;
+
+      result[idx].forEach((item, index) => {
+        obj[type[index]] = item;
       });
+
       return obj;
     });
 
@@ -328,6 +339,7 @@ class RetCodeService extends Service {
     const { ctx } = this;
 
     let hits = [];
+    let count = 0;
     if (Array.isArray(type)) {
       const result = await Promise.all(
         type.map(item => {
@@ -353,13 +365,24 @@ class RetCodeService extends Service {
           .find({
             t: type
           })
+          .limit(body.size)
+          .skip(body.from)
           .exec()) || [];
+
+      count =
+        (await webModel
+          .find({
+            t: type
+          })
+          .count()
+          .exec()) || 0;
     }
 
     return {
       hits: {
         hits: hits
-      }
+      },
+      count
     };
     // TODO: 关了elasticsearch
     // return await this.app.elasticsearch.search({
