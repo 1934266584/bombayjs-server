@@ -174,6 +174,8 @@ export default class ReportController extends Controller {
     const type = body.t;
     const token = body.token;
 
+    this.reportMessageToJava(body);
+
     let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
 
     let model = new webModel();
@@ -183,5 +185,29 @@ export default class ReportController extends Controller {
     });
 
     return await model.save();
+  }
+
+  // 发请求到后台java层，推送到kafaka
+  async reportMessageToJava(request) {
+    const { t, body = {} } = request;
+
+    const includes = ["behavior", "pv", "app.click"];
+
+    if (includes.includes(t)) {
+      let params = request;
+      if (t === "behavior") {
+        if (body.behavior.type === "ui.click") {
+          params = {
+            ...request,
+            t: body.behavior.type,
+            ...body.behavior.data
+          };
+        } else {
+          return;
+        }
+      }
+      // 这里发网络请求到后台
+      console.log(params);
+    }
   }
 }

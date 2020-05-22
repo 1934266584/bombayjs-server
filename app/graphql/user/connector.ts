@@ -11,6 +11,7 @@ class UserConnector {
     };
   }
   fetchById(id: string) {
+    console.log(id)
     return {
       id: 1,
       name: 'aaa'
