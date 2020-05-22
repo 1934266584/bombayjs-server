@@ -10,6 +10,7 @@ import ExportUser from '../../../app/model/user';
 import ExportWebWebApi from '../../../app/model/web/web_api';
 import ExportWebWebAvg from '../../../app/model/web/web_avg';
 import ExportWebWebBehavior from '../../../app/model/web/web_behavior';
+import ExportWebWebDuration from '../../../app/model/web/web_duration';
 import ExportWebWebError from '../../../app/model/web/web_error';
 import ExportWebWebHealth from '../../../app/model/web/web_health';
 import ExportWebWebMsg from '../../../app/model/web/web_msg';
@@ -32,6 +33,7 @@ declare module 'egg' {
       WebApi: ReturnType<typeof ExportWebWebApi>;
       WebAvg: ReturnType<typeof ExportWebWebAvg>;
       WebBehavior: ReturnType<typeof ExportWebWebBehavior>;
+      WebDuration: ReturnType<typeof ExportWebWebDuration>;
       WebError: ReturnType<typeof ExportWebWebError>;
       WebHealth: ReturnType<typeof ExportWebWebHealth>;
       WebMsg: ReturnType<typeof ExportWebWebMsg>;

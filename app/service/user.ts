@@ -34,7 +34,6 @@ export default class UserService extends Service {
       return this.app.retError("用户被冻结不能登录，请联系管理员！");
 
     const token = await this.service.actionToken.apply(userInfo._id);
-    console.log(token);
     // TODO: redis保存用户信息
     // this.app.redis.set(
     //   `${userInfo._id}_user_login`,

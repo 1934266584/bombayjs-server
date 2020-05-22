@@ -106,12 +106,15 @@ export default class ReportController extends Controller {
     const { token } = body;
     if (token) {
       const tokenObj = await this.service.project.getProjectByToken(token);
+
       if (tokenObj && tokenObj.is_use === 1) {
-        // const { report } = service.web;
         await this.saveWebReportDataForMongodb(body);
+        ctx.helper.success();
+      } else {
+        this.ctx.body = this.app.retError("token错误, 请在后台申请token");
+        this.ctx.status = 200;
       }
     }
-    ctx.helper.success();
   }
   /**
    * *******************************************************************************************
@@ -176,7 +179,7 @@ export default class ReportController extends Controller {
     let model = new webModel();
 
     Object.keys(body).forEach(key => {
-      model[key] = body[key]
+      model[key] = body[key];
     });
 
     return await model.save();

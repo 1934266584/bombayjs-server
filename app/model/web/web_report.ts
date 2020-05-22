@@ -16,12 +16,11 @@ export default {
   ct: { type: String }, // 网络
   _v: { type: String }, // 脚本sdk版本
   o: { type: String }, // 原始url
-  user: { type: Object }, // 用户信息
-
-  browser: { type: String }, // 浏览器名称
-  borwser_version: { type: String }, // 浏览器版本
-  system: { type: String }, // 操作系统
-  system_version: { type: String }, // 系统版本
+  user: { type: String }, // 用户信息
+  deviceBrowser: { type: String }, //设备的浏览器类型
+  deviceModel: { type: String }, // 设备的品牌相关
+  deviceEngine: { type: String }, // 设备的浏览器引擎
+  deviceOs: { type: String }, // 设备的操作系统
   ip: { type: String }, // 访问者IP
   county: { type: String }, // 国家
   province: { type: String }, // 省

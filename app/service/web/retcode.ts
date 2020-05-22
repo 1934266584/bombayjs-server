@@ -305,8 +305,6 @@ class RetCodeService extends Service {
       });
     }
 
-    console.log(result);
-
     dateList = dateList.map((item, idx) => {
       const { date } = item;
       let obj = {
@@ -333,7 +331,8 @@ class RetCodeService extends Service {
       return {
         hits: {
           hits: []
-        }
+        },
+        count: 0
       };
     }
     const { ctx } = this;
@@ -471,7 +470,6 @@ class RetCodeService extends Service {
    * *******************************************************************************************
    */
   public aggsIndicatorQuery(measures = [], intervalMillis) {
-    console.log(measures, Array.isArray(measures));
     const aggs: { pv?: any; uv?: any } = {};
     measures.map(item => {
       if (item === "pv" || item === "uv") {

@@ -32,7 +32,6 @@ export default class PageVariateService extends Service {
     const page = ctx.model.PageVariate.find(cond);
     const event = ctx.model.EventVariate.find(cond);
     const [rPage, rEvent] = await Promise.all([page, event]);
-    console.log(rPage, rEvent);
     const rPages = rPage.map(item => {
       return {
         tt: "page",
