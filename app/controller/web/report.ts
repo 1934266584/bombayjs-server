@@ -108,7 +108,7 @@ export default class ReportController extends Controller {
       const tokenObj = await this.service.project.getProjectByToken(token);
 
       if (tokenObj && tokenObj.is_use === 1) {
-        await this.saveWebReportDataForMongodb(body);
+        await this.saveWebReportDataForMongodb(body, tokenObj);
         ctx.helper.success();
       } else {
         this.ctx.body = this.app.retError("token错误, 请在后台申请token");
@@ -168,13 +168,13 @@ export default class ReportController extends Controller {
   // }
 
   // 通过mongodb 数据库存储数据
-  async saveWebReportDataForMongodb(body) {
+  async saveWebReportDataForMongodb(body, projectObject) {
     const { ctx } = this;
 
     const type = body.t;
     const token = body.token;
 
-    this.reportMessageToJava(body);
+    this.reportMessageToJava(body, projectObject);
 
     let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
 
@@ -188,7 +188,7 @@ export default class ReportController extends Controller {
   }
 
   // 发请求到后台java层，推送到kafaka
-  async reportMessageToJava(request) {
+  async reportMessageToJava(request, projectObject) {
     const { t, body = {} } = request;
 
     const includes = ["behavior", "pv", "app.click"];
@@ -207,7 +207,29 @@ export default class ReportController extends Controller {
         }
       }
       // 这里发网络请求到后台
-      console.log(params);
+      const ctx = this.ctx;
+
+      const result = await ctx.curl(
+        "https://apisandbox.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
+        {
+          // 必须指定 method
+          method: "POST",
+          data: {
+            behaviorRequest: JSON.stringify({
+              projectName: projectObject.project_name,
+              ...params,
+              deviceBrowser: JSON.parse(params.deviceBrowser),
+              deviceModel: JSON.parse(params.deviceModel),
+              deviceOs: JSON.parse(params.deviceOs),
+              deviceEngine: JSON.parse(params.deviceEngine),
+              user: JSON.parse(params.user)
+            })
+          },
+          // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
+          dataType: "json"
+        }
+      );
+      console.log(result.data);
     }
   }
 }
