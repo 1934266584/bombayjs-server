@@ -108,6 +108,8 @@ export default class ReportController extends Controller {
       const tokenObj = await this.service.project.getProjectByToken(token);
 
       if (tokenObj && tokenObj.is_use === 1) {
+        // TODO: 这个地方为具体的业务代码，可以删除
+        // 而且最好挪到service中去 层级比较明确
         await this.saveWebReportDataForMongodb(body, tokenObj);
         ctx.helper.success();
       } else {
@@ -188,6 +190,8 @@ export default class ReportController extends Controller {
   }
 
   // 发请求到后台java层，推送到kafaka
+  // TODO: 这个地方为具体的业务代码，可以删除
+  // 而且最好挪到service中去 层级比较明确
   async reportMessageToJava(request, projectObject) {
     const { t, body = {} } = request;
 
