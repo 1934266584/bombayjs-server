@@ -110,7 +110,9 @@ export default class ReportController extends Controller {
       if (tokenObj && tokenObj.is_use === 1) {
         // TODO: 这个地方为具体的业务代码，可以删除
         // 而且最好挪到service中去 层级比较明确
-        await this.saveWebReportDataForMongodb(body, tokenObj);
+        if (body.needPushtoKafaka) {
+          await this.saveWebReportDataForMongodb(body, tokenObj);
+        }
         ctx.helper.success();
       } else {
         this.ctx.body = this.app.retError("token错误, 请在后台申请token");
