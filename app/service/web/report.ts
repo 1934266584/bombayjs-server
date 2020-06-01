@@ -1,14 +1,15 @@
 // @ts-nocheck
-import { Service, Context } from 'egg';
+import { Service, Context } from "egg";
 // tslint:disable-next-line:no-var-requires
-const moment = require('moment');
+const moment = require("moment");
 // tslint:disable-next-line:no-var-requires
-const UUid = require('uuid');
+const UUid = require("uuid");
 
-class ReportService extends Service {
+export default class ReportService extends Service {
   constructor(ctx: Context) {
     super(ctx);
   }
+
   /**
    * *******************************************************************************************
    * 保存数据到es
@@ -21,11 +22,11 @@ class ReportService extends Service {
    */
   public async saveDataToEs(payload) {
     return await this.app.curl(this.app.config.kafkaSubmit, {
-      dataType: 'json',
-      method: 'POST',
-      contentType: 'json',
+      dataType: "json",
+      method: "POST",
+      contentType: "json",
       data: {
-        event: 'web-report-collect',
+        event: "web-report-collect",
         id: UUid.v1(),
         timestamp: new Date().getTime(),
         eventLog: payload
@@ -40,7 +41,7 @@ class ReportService extends Service {
    */
   public async getLocation(ip) {
     const isExist = await this.app.elasticsearch.indices.exists({
-      index: 'frontend-event-log-web-report-location'
+      index: "frontend-event-log-web-report-location"
     });
     if (isExist) {
       return this.getLocationToEs(ip);
@@ -58,8 +59,8 @@ class ReportService extends Service {
   public async getLocationToEs(ip) {
     const ipl = this.ctx.helper.subIp(ip);
     const res = await this.app.elasticsearch.search({
-      index: 'frontend-event-log-web-report-location',
-      type: '_doc',
+      index: "frontend-event-log-web-report-location",
+      type: "_doc",
       body: {
         query: {
           match: {
@@ -71,10 +72,10 @@ class ReportService extends Service {
     if (res.hits.hits.length > 0) {
       const { location, ad_info } = res.hits.hits[0]._source;
       if (
-        ad_info.nation === '中国' &&
-        (ad_info.province === '香港特别行政区' ||
-          ad_info.province === '台湾省' ||
-          ad_info.province === '澳门特别行政区')
+        ad_info.nation === "中国" &&
+        (ad_info.province === "香港特别行政区" ||
+          ad_info.province === "台湾省" ||
+          ad_info.province === "澳门特别行政区")
       ) {
         ad_info.nation = `${ad_info.nation}${ad_info.province}`;
       }
@@ -93,9 +94,9 @@ class ReportService extends Service {
   async save(payload) {
     return await this.app.elasticsearch.index({
       index: `frontend-event-log-web-report-collect-${moment().format(
-        'YYYY-MM'
+        "YYYY-MM"
       )}`,
-      type: '_doc',
+      type: "_doc",
       body: payload
     });
     // await this.ctx.kafka.sendMessageSync({
@@ -112,5 +113,3 @@ class ReportService extends Service {
     // }
   }
 }
-
-module.exports = ReportService;

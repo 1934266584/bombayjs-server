@@ -65,7 +65,8 @@ export default class ReportController extends Controller {
     bandwidth: { type: "number", required: false }, //  估计的带宽 单位M/s
     navtype: { type: "string", required: false }, //  nav方式 如reload
     fmp: { type: "number", required: false }, // 停留时间
-    resTimes: { type: "string", required: false }
+    resTimes: { type: "string", required: false },
+    needPushtoKafaka: { type: "boolean", required: false }
   };
   public toNumberParas = [
     "times",
@@ -176,9 +177,7 @@ export default class ReportController extends Controller {
     const type = body.t;
     const token = body.token;
 
-    if (body.needPushtoKafaka) {
-      this.reportMessageToJava(body, projectObject);
-    }
+    this.reportMessageToJava(body, projectObject);
 
     let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
 
@@ -195,47 +194,49 @@ export default class ReportController extends Controller {
   // TODO: 这个地方为具体的业务代码，可以删除
   // 而且最好挪到service中去 层级比较明确
   async reportMessageToJava(request, projectObject) {
-    const { t, body = {} } = request;
+    const { t, body = {}, needPushtoKafaka = 'false' } = request;
 
-    const includes = ["behavior", "pv", "app.click"];
+    if (needPushtoKafaka && needPushtoKafaka === 'true') {
+      const includes = ["behavior", "pv", "app.click"];
 
-    if (includes.includes(t)) {
-      let params = request;
-      if (t === "behavior") {
-        if (body.behavior.type === "ui.click") {
-          params = {
-            ...request,
-            t: body.behavior.type,
-            ...body.behavior.data
-          };
-        } else {
-          return;
+      if (includes.includes(t)) {
+        let params = request;
+        if (t === "behavior") {
+          if (body.behavior.type === "ui.click") {
+            params = {
+              ...request,
+              t: body.behavior.type,
+              ...body.behavior.data
+            };
+          } else {
+            return;
+          }
         }
+        // 这里发网络请求到后台
+        const ctx = this.ctx;
+
+        const result = await ctx.curl(
+          "https://apisandbox.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
+          {
+            // 必须指定 method
+            method: "POST",
+            data: {
+              behaviorRequest: JSON.stringify({
+                projectName: projectObject.project_name,
+                ...params,
+                deviceBrowser: JSON.parse(params.deviceBrowser),
+                deviceModel: JSON.parse(params.deviceModel),
+                deviceOs: JSON.parse(params.deviceOs),
+                deviceEngine: JSON.parse(params.deviceEngine),
+                user: JSON.parse(params.user)
+              })
+            },
+            // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
+            dataType: "json"
+          }
+        );
+        console.log(22222, result.data);
       }
-      // 这里发网络请求到后台
-      const ctx = this.ctx;
-
-      const result = await ctx.curl(
-        "https://apisandbox.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
-        {
-          // 必须指定 method
-          method: "POST",
-          data: {
-            behaviorRequest: JSON.stringify({
-              projectName: projectObject.project_name,
-              ...params,
-              deviceBrowser: JSON.parse(params.deviceBrowser),
-              deviceModel: JSON.parse(params.deviceModel),
-              deviceOs: JSON.parse(params.deviceOs),
-              deviceEngine: JSON.parse(params.deviceEngine),
-              user: JSON.parse(params.user)
-            })
-          },
-          // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
-          dataType: "json"
-        }
-      );
-      console.log(result.data);
     }
   }
 }
