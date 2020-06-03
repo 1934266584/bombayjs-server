@@ -1,6 +1,4 @@
-// @ts-nocheck
 import { Service } from "egg";
-// tslint:disable-next-line:no-var-requires
 const _ = require("lodash");
 
 export default class ErrorService extends Service {

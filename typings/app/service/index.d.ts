@@ -13,6 +13,7 @@ import ExportGroup from '../../../app/service/group';
 import ExportMeasure from '../../../app/service/measure';
 import ExportPageVariate from '../../../app/service/pageVariate';
 import ExportProject from '../../../app/service/project';
+import ExportTransferJava from '../../../app/service/transferJava';
 import ExportUser from '../../../app/service/user';
 import ExportWebBase from '../../../app/service/web/base';
 import ExportWebError from '../../../app/service/web/error';
@@ -28,6 +29,7 @@ declare module 'egg' {
     measure: AutoInstanceType<typeof ExportMeasure>;
     pageVariate: AutoInstanceType<typeof ExportPageVariate>;
     project: AutoInstanceType<typeof ExportProject>;
+    transferJava: AutoInstanceType<typeof ExportTransferJava>;
     user: AutoInstanceType<typeof ExportUser>;
     web: {
       base: AutoInstanceType<typeof ExportWebBase>;

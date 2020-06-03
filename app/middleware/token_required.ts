@@ -1,5 +1,3 @@
-// @ts-nocheck
-// tslint:disable-next-line:no-var-requires
 // 这块没有用到了
 const Url = require("url");
 import { Context } from "egg";

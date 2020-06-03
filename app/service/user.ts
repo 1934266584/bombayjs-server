@@ -1,7 +1,5 @@
 import { Service, Context } from "egg";
-// tslint:disable-next-line:no-var-requires
 const crypto = require("crypto");
-// tslint:disable-next-line:no-var-requires
 const _ = require("lodash");
 
 /**

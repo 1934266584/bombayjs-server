@@ -15,7 +15,7 @@ module.exports = app => {
   schema.index({ t: 1, page: 1 });
   schema.index({ page: 1 });
 
-  app.models.webResource = (token: string) => {
+  app.models.WebResource = (token: string) => {
     return mongoose.model(`web_resource_${token}`, schema);
   };
 };

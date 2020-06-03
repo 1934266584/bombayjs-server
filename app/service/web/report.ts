@@ -1,8 +1,5 @@
-// @ts-nocheck
 import { Service, Context } from "egg";
-// tslint:disable-next-line:no-var-requires
 const moment = require("moment");
-// tslint:disable-next-line:no-var-requires
 const UUid = require("uuid");
 
 export default class ReportService extends Service {

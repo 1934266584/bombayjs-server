@@ -1,8 +1,6 @@
-// @ts-nocheck
 "use strict";
 
 import { Service } from "egg";
-// @ts-ignore
 import * as jwt from "jsonwebtoken";
 
 export default class ActionTokenService extends Service {

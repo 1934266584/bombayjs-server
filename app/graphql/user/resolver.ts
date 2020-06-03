@@ -1,4 +1,3 @@
-// @ts-nocheck
 module.exports = {
   Query: {
     user(_: any, { id }, ctx) {

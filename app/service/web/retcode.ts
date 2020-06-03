@@ -1,7 +1,5 @@
 // @ts-nocheck
 import { Service, Context } from "egg";
-
-// tslint:disable-next-line:no-var-requires
 const moment = require("moment");
 const _ = require("lodash");
 

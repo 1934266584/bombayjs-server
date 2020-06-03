@@ -1,7 +1,5 @@
 import { Controller } from "egg";
-// tslint:disable-next-line:no-var-requires
 const detector = require("detector");
-// frontend-event-log-web-report-collect-*
 const _ = require("lodash");
 interface Ibody {
   res?: any;
@@ -110,7 +108,6 @@ export default class ReportController extends Controller {
 
       if (tokenObj && tokenObj.is_use === 1) {
         // TODO: 这个地方为具体的业务代码，可以删除
-        // 而且最好挪到service中去 层级比较明确
         await this.saveWebReportDataForMongodb(body, tokenObj);
         ctx.helper.success();
       } else {
@@ -177,66 +174,22 @@ export default class ReportController extends Controller {
     const type = body.t;
     const token = body.token;
 
-    this.reportMessageToJava(body, projectObject);
+    this.service.transferJava.reportMessageToJava(body, projectObject);
 
-    let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
+    const saveType = ['api', 'avg', 'behavior', 'duration', 'error', 'health', 'msg', 'percent', 'perf', 'pv', 'res', 'resource', 'sum']
 
-    let model = new webModel();
+    if (saveType.includes(type)) {
+      let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
 
-    Object.keys(body).forEach(key => {
-      model[key] = body[key];
-    });
+      let model = new webModel();
 
-    return await model.save();
-  }
+      Object.keys(body).forEach(key => {
+        model[key] = body[key];
+      });
 
-  // 发请求到后台java层，推送到kafaka
-  // TODO: 这个地方为具体的业务代码，可以删除
-  // 而且最好挪到service中去 层级比较明确
-  async reportMessageToJava(request, projectObject) {
-    const { t, body = {}, needPushtoKafaka = 'false' } = request;
-
-    if (needPushtoKafaka && needPushtoKafaka === 'true') {
-      const includes = ["behavior", "pv", "app.click"];
-
-      if (includes.includes(t)) {
-        let params = request;
-        if (t === "behavior") {
-          if (body.behavior.type === "ui.click") {
-            params = {
-              ...request,
-              t: body.behavior.type,
-              ...body.behavior.data
-            };
-          } else {
-            return;
-          }
-        }
-        // 这里发网络请求到后台
-        const ctx = this.ctx;
-
-        const result = await ctx.curl(
-          "https://apisandbox.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
-          {
-            // 必须指定 method
-            method: "POST",
-            data: {
-              behaviorRequest: JSON.stringify({
-                projectName: projectObject.project_name,
-                ...params,
-                deviceBrowser: JSON.parse(params.deviceBrowser),
-                deviceModel: JSON.parse(params.deviceModel),
-                deviceOs: JSON.parse(params.deviceOs),
-                deviceEngine: JSON.parse(params.deviceEngine),
-                user: JSON.parse(params.user)
-              })
-            },
-            // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
-            dataType: "json"
-          }
-        );
-        console.log(22222, result.data);
-      }
+      return await model.save();
     }
+
+    return false
   }
 }

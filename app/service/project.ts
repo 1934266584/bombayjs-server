@@ -145,6 +145,13 @@ export default class ProjectService extends Service {
     return this.app.retResult(result);
   }
 
+  // 获取全部的工程
+  async getAllProjectList() {
+    const result = await this.ctx.model.Project.find()
+
+    return result
+  }
+
   // 获得项目列表信息
   async getWebProjectList() {
     const result = await this.ctx.model.Project.aggregate([

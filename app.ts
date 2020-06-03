@@ -1,4 +1,3 @@
-// @ts-nocheck
 module.exports = async app => {
   app.models = {};
   // app.beforeStart(async () => {

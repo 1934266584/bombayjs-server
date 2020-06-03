@@ -32,7 +32,6 @@ module.exports = {
     }
     qs.split(eq).reduce((previousValue, currentValue) => {
       const [key, value] = currentValue.split(seq);
-      // @ts-ignore
       previousValue[key.trim()] = value.trim();
       return previousValue;
     }, obj);

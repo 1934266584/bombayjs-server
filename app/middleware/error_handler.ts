@@ -1,4 +1,3 @@
-// @ts-nocheck
 module.exports = ({}, app) => {
   return async (ctx, next) => {
     try {

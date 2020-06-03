@@ -1,8 +1,5 @@
-// tslint:disable-next-line:no-var-requires
-// @ts-nocheck
 const path = require('path');
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
-// tslint:disable-next-line:no-var-requires
 const dotenv = require('dotenv');
 dotenv.config({ path: path.join(__dirname, 'bombay.config') });
 
@@ -15,12 +12,9 @@ declare const process: NodeJS.Process & {
 
 const {
   MONGO_URI,
-  REDIS_CLUSTER,
-  ELASTICSEARCH_CLUSTER,
   HOST_API,
   MAP_API,
   MAP_KEY,
-  KAFKA_CLUSTER
 }: {
   MONGO_URI?: string;
   REDIS_CLUSTER?: string;

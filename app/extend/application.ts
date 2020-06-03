@@ -1,7 +1,6 @@
-// @ts-nocheck
 module.exports = {
   /* 生成随机字符串 */
-  randomString(len?: number) {
+  randomString(len?: number): string {
     len = len || 7;
     const $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
     const maxPos = $chars.length;
@@ -21,7 +20,6 @@ module.exports = {
   retError(errorMsg = 'fail', errorCode = -1, data = {}) {
     return this.retResult(data, errorMsg, errorCode);
   },
-  // @ts-ignore
   format(date: Date, fmt) {
     const o = {
       'M+': date.getMonth() + 1, // 月份
