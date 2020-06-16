@@ -107,7 +107,7 @@ export default class ReportController extends Controller {
       const tokenObj = await this.service.project.getProjectByToken(token);
 
       if (tokenObj && tokenObj.is_use === 1) {
-        // TODO: 这个地方为具体的业务代码，可以删除
+        // TODO: 需要核对下接口上传的地址和申请的地址是否一致，不一致的情况下不允许存储到数据库中
         await this.saveWebReportDataForMongodb(body, tokenObj);
         ctx.helper.success();
       } else {
@@ -174,9 +174,24 @@ export default class ReportController extends Controller {
     const type = body.t;
     const token = body.token;
 
+    // TODO: 这个地方为具体的业务代码，可以删除
     this.service.transferJava.reportMessageToJava(body, projectObject);
 
-    const saveType = ['api', 'avg', 'behavior', 'duration', 'error', 'health', 'msg', 'percent', 'perf', 'pv', 'res', 'resource', 'sum']
+    const saveType = [
+      "api",
+      "avg",
+      "behavior",
+      "duration",
+      "error",
+      "health",
+      "msg",
+      "percent",
+      "perf",
+      "pv",
+      "res",
+      "resource",
+      "sum"
+    ];
 
     if (saveType.includes(type)) {
       let webModel = ctx.app.models[`Web${_.capitalize(type)}`](token);
@@ -190,6 +205,6 @@ export default class ReportController extends Controller {
       return await model.save();
     }
 
-    return false
+    return false;
   }
 }
