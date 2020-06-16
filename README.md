@@ -81,9 +81,21 @@ extend 是自己添加的一些公共方法
 schedule 定时任务更新用户的位置，与elasticsearch结合使用
 
 
+*** TODO ***
 
+后续优化的方向
+1、数据的筛选，因为数据量比较大，业界通用的方案是利用elasticsearch搜索数据库来进行数据的存储和筛选
+```
+### elasticsearch  Kibana
+安装：
+  https://www.elastic.co/guide/cn/elasticsearch/guide/cn/running-elasticsearch.html
+启动 
+  ./bin/elasticsearch
+  ./bin/kibana
+```
 
-
+2、也可以用kafka来进行相关的动作数据流（通常应该是不需要用的）
+```
 ### kafka -- mac
 安装
 brew install kafka
@@ -91,10 +103,10 @@ brew install kafka
 zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties 
 启动kafka
 kafka-server-start /usr/local/etc/kafka/server.properties 
+```
 
-### elasticsearch  Kibana
-安装：
-  https://www.elastic.co/guide/cn/elasticsearch/guide/cn/running-elasticsearch.html
-启动 
-  ./bin/elasticsearch
-  ./bin/kibana
+3、永久性存储
+最终建议存储到mysql中，数据也更好的统计及前端的展示，建议通过的用户相关信息和错误相关信息再加运行环境进行md5，这样利于mysql最终数据的统计
+
+
+
