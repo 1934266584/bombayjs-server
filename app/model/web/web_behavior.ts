@@ -6,6 +6,7 @@ module.exports = app => {
     {
       ...Report,
       behaivor: { type: Object },
+      body: { type: Object },
     },
     { timestamps: true }
   );

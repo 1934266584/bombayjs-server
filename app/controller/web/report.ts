@@ -98,6 +98,48 @@ export default class ReportController extends Controller {
    * web用户数据上报保存到kafka
    * *******************************************************************************************
    */
+  public async list() {
+    const { ctx } = this;
+    const body = await this.adapterBody();
+    ctx.validate(this.VReport, body);
+
+    let list = JSON.parse(body.body.list);
+    const { token } = list[0];
+    if (token) {
+      const tokenObj = await this.service.project.getProjectByToken(token);
+
+      if (tokenObj && tokenObj.is_use === 1) {
+        for (let item of list) {
+          // console.log(item)
+          const { behavior, ...params } = item;
+          const instance = {
+            detector: body.device,
+            ip: body.ip,
+            pv: 1,
+            uv: body.ip,
+            user_agent: body.user_agent,
+            "@timestamp": new Date(),
+            body: behavior,
+            ...params
+          };
+
+          console.log(instance)
+          // TODO: 需要核对下接口上传的地址和申请的地址是否一致，不一致的情况下不允许存储到数据库中
+          await this.saveWebReportDataForMongodb(instance, tokenObj);
+        }
+
+        ctx.helper.success();
+      } else {
+        this.ctx.body = this.app.retError("token错误, 请在后台申请token");
+        this.ctx.status = 200;
+      }
+    }
+  }
+  /**
+   * *******************************************************************************************
+   * web用户数据上报保存到kafka
+   * *******************************************************************************************
+   */
   public async create() {
     const { ctx } = this;
     const body = await this.adapterBody();
