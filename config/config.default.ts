@@ -38,6 +38,11 @@ export default (appInfo: EggAppInfo): any => {
   //   match: [ '/api/v1/report/web' ],
   // };
 
+  // 日志地址修改
+  config.logger = {
+    dir: path.join(__dirname, "./logs")
+  };
+
   // mongodb 服务
   config.mongoose = {
     client: {
