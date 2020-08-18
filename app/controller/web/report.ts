@@ -106,9 +106,11 @@ export default class ReportController extends Controller {
     if (!body.body.behaviorList) {
       this.ctx.body = this.app.retError("数据格式错误");
       this.ctx.status = 200;
-      return      
+      return;
     }
-    let list = JSON.parse(body.body.behaviorList);
+    let list = Array.isArray(body.body.behaviorList)
+      ? body.body.behaviorList
+      : JSON.parse(body.body.behaviorList);;
     const { token } = list[0];
     if (token) {
       const tokenObj = await this.service.project.getProjectByToken(token);
