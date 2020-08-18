@@ -8,8 +8,8 @@
     "declarations": true
   },
   "scripts": {
-    "start": "egg-scripts start --port=7002 --daemon --title=egg-server-bombayjs-server",
-    "stop": "egg-scripts stop --port=7002 --title=egg-server-bombayjs-server",
+    "start": "egg-scripts start --daemon --title=egg-server-bombayjs-server",
+    "stop": "egg-scripts stop --title=egg-server-bombayjs-server",
     "dev": "egg-bin dev --port=7002",
     "debug": "egg-bin debug --port=7002",
     "test-local": "egg-bin test",
