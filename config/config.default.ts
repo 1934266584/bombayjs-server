@@ -43,12 +43,6 @@ export default (appInfo: EggAppInfo): any => {
     dir: path.join(__dirname, "../logs")
   };
 
-  config.cluster = {
-    listen: {
-      port: 7002
-    }
-  }
-
   // mongodb 服务
   config.mongoose = {
     client: {
