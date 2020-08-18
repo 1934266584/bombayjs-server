@@ -57,9 +57,8 @@ export default class TransferJavaService extends Service {
 
   async reportMessageToJavaByList(requestList, projectObject) {
     let behaviorBatchRequest = requestList.map(request => {
-      const { t, body = {}, needPushtoKafaka = "false" } = request;
-
-      if (needPushtoKafaka && needPushtoKafaka === "true") {
+      const { t, body = {}, needPushtoKafaka = false } = request;
+      if (needPushtoKafaka) {
         const includes = [
           "behavior",
           "pv",
@@ -71,14 +70,12 @@ export default class TransferJavaService extends Service {
         if (includes.includes(t)) {
           let params = request;
           if (t === "behavior") {
-            if (body.behavior.type === "ui.click") {
+            if (body.behavior && body.behavior.type === "ui.click") {
               params = {
                 ...request,
                 t: body.behavior.type,
                 ...body.behavior.data
               };
-            } else {
-              return "";
             }
           }
           return {
@@ -98,7 +95,9 @@ export default class TransferJavaService extends Service {
       }
     });
 
-    behaviorBatchRequest = behaviorBatchRequest.filters(item => item);
+    // console.log(behaviorBatchRequest);
+
+    behaviorBatchRequest = behaviorBatchRequest.filter(item => item);
 
     // 这里发网络请求到后台
     const ctx = this.ctx;
@@ -109,7 +108,7 @@ export default class TransferJavaService extends Service {
         // 必须指定 method
         method: "POST",
         data: {
-          behaviorBatchRequest
+          behaviorBatchRequest: JSON.stringify(behaviorBatchRequest)
         },
         // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
         dataType: "json"
