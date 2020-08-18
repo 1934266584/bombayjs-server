@@ -40,7 +40,7 @@ export default (appInfo: EggAppInfo): any => {
 
   // 日志地址修改
   config.logger = {
-    dir: path.join(__dirname, "./logs")
+    dir: path.join(__dirname, "../logs")
   };
 
   // mongodb 服务
