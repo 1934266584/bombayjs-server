@@ -31,7 +31,7 @@ export default class TransferJavaService extends Service {
         const ctx = this.ctx;
 
         const result = await ctx.curl(
-          "https://pre-rent.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
+          "https://rent-pre.zoomlion.com/portalapi/portalhome/v1/userBehavior/add",
           {
             // 必须指定 method
             method: "POST",

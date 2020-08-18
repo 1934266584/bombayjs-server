@@ -1,7 +1,7 @@
 import { Application } from "egg";
 
 module.exports = (app: Application) => {
-  const apiV1Router = app.router.namespace("/api/v1");
+  const apiV1Router = app.router.namespace("/portal-bombay/api/v1");
   const { controller, middleware } = app;
   const { index, report, retcode } = controller.web;
   // const { index, report } = controller.web;
