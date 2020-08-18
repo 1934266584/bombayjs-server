@@ -110,12 +110,13 @@ export default class ReportController extends Controller {
     }
     let list = Array.isArray(body.body.behaviorList)
       ? body.body.behaviorList
-      : JSON.parse(body.body.behaviorList);;
+      : JSON.parse(body.body.behaviorList);
     const { token } = list[0];
     if (token) {
       const tokenObj = await this.service.project.getProjectByToken(token);
 
       if (tokenObj && tokenObj.is_use === 1) {
+        let reportList: any[] = [];
         for (let item of list) {
           // console.log(item)
           const { behavior, ...params } = item;
@@ -130,10 +131,16 @@ export default class ReportController extends Controller {
             ...params
           };
 
-          console.log(instance)
+          reportList.push(instance);
+
           // TODO: 需要核对下接口上传的地址和申请的地址是否一致，不一致的情况下不允许存储到数据库中
-          await this.saveWebReportDataForMongodb(instance, tokenObj);
+          await this.saveWebReportDataForMongodb(instance);
         }
+
+        await this.service.transferJava.reportMessageToJavaByList(
+          reportList,
+          tokenObj
+        );
 
         ctx.helper.success();
       } else {
@@ -157,7 +164,8 @@ export default class ReportController extends Controller {
 
       if (tokenObj && tokenObj.is_use === 1) {
         // TODO: 需要核对下接口上传的地址和申请的地址是否一致，不一致的情况下不允许存储到数据库中
-        await this.saveWebReportDataForMongodb(body, tokenObj);
+        await this.saveWebReportDataForMongodb(body);
+        await this.service.transferJava.reportMessageToJava(body, tokenObj);
         ctx.helper.success();
       } else {
         this.ctx.body = this.app.retError("token错误, 请在后台申请token");
@@ -217,14 +225,11 @@ export default class ReportController extends Controller {
   // }
 
   // 通过mongodb 数据库存储数据
-  async saveWebReportDataForMongodb(body, projectObject) {
+  async saveWebReportDataForMongodb(body) {
     const { ctx } = this;
 
     const type = body.t;
     const token = body.token;
-
-    // TODO: 这个地方为具体的业务代码，可以删除
-    this.service.transferJava.reportMessageToJava(body, projectObject);
 
     const saveType = [
       "api",
