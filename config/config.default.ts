@@ -48,10 +48,10 @@ export default (appInfo: EggAppInfo): any => {
     client: {
       url: MONGO_URI,
       options: {
-        auth: {
-          user: "bombayjs",
-          password: "bombayjs.113"
-        },
+        // auth: {
+        //   user: "bombayjs",
+        //   password: "bombayjs.113"
+        // },
         poolSize: 20
       }
     }
