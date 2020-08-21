@@ -109,4 +109,47 @@ kafka-server-start /usr/local/etc/kafka/server.properties
 最终建议存储到mysql中，数据也更好的统计及前端的展示，建议通过的用户相关信息和错误相关信息再加运行环境进行md5，这样利于mysql最终数据的统计
 
 
+### NOTICE
+不同的环境配置需要修改的地方
+1、config/bombay.config 中的
+```
+##Mongodb 地址 (修改MONGO的地址)
+MONGO_URI=mongodb://127.0.0.1:27017/bombayjs
+```
+
+2、config/config.default.ts 中
+```
+  // mongodb 服务
+  config.mongoose = {
+    client: {
+      url: MONGO_URI,
+      options: {
+        // 连接需要的账号和密码
+        // auth: {
+        //   user: "bombayjs",
+        //   password: "bombayjs.113"
+        // },
+        poolSize: 20
+      }
+    }
+  };
+```
+
+3、修改app/service/transferJava.ts中的转发给后台的地址
+```
+const result = await ctx.curl(
+  // 请求路径地址修改
+  "https://rent-pre.zoomlion.com/portalapi/portalhome/v1/userBehavior/addBatch",
+  {
+    // 必须指定 method
+    method: "POST",
+    data: {
+      behaviorBatchRequest: JSON.stringify(behaviorBatchRequest)
+    },
+    // 明确告诉 HttpClient 以 JSON 格式处理返回的响应 body
+    dataType: "json"
+  }
+);
+```
+
 
